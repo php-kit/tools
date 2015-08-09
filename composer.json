@@ -20,17 +20,17 @@
   ],
   "autoload": {
     "files": [
-      "src/arrays",
-      "src/conversions",
-      "src/datetime",
-      "src/expressions",
-      "src/functions",
-      "src/meta",
-      "src/mixed",
-      "src/objects",
-      "src/runtime",
-      "src/strings",
-      "src/system"
+      "src/arrays.php",
+      "src/conversions.php",
+      "src/datetime.php",
+      "src/expressions.php",
+      "src/functions.php",
+      "src/meta.php",
+      "src/mixed.php",
+      "src/objects.php",
+      "src/runtime.php",
+      "src/strings.php",
+      "src/system.php"
     ]
   }
 }
