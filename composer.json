@@ -1,0 +1,36 @@
+{
+  "name": "impactwave/php-kit",
+  "license": "MIT",
+  "description": "A toolkit of utility functions for general use",
+  "keywords": [
+    "helpers",
+    "utility"
+  ],
+  "homepage": "https://github.com/impactwave/php-kit",
+  "authors": [
+    {
+      "name": "Impactwave",
+      "email": "impactwave@impactwave.com",
+      "homepage": "http://impactwave.com"
+    },
+    {
+      "name": "Cláudio Silva",
+      "email": "claudio.silva@impactwave.com"
+    }
+  ],
+  "autoload": {
+    "files": [
+      "src/arrays",
+      "src/conversions",
+      "src/datetime",
+      "src/expressions",
+      "src/functions",
+      "src/meta",
+      "src/mixed",
+      "src/objects",
+      "src/runtime",
+      "src/strings",
+      "src/system"
+    ]
+  }
+}
