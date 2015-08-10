@@ -62,11 +62,21 @@ function e ($o)
 }
 
 /**
- * Checks if the specified value is not null or an empty string.
+ * Checks if the specified value is not empty.
+ *
+ * <p>**Note:** an empty value is `null` or an empty string.
+ *
+ * <p>**Warning:** do not use this for checking the existence of array elements or object properties.<br>
+ * `exists()` is not equivalent to `empty()` or `isset()`, as those are special language constructs.
+ * <br>For instance, these expression will cause PHP warnings:
+ * <code>
+ *   if (empty($array[$key])
+ *   if (empty($obj->$key)
+ * </code>
  *
  * @param mixed $exp
  *
- * @return bool True if the value is empty.
+ * @return bool `true` if the value is not empty.
  */
 function exists ($exp)
 {
@@ -74,55 +84,87 @@ function exists ($exp)
 }
 
 /**
- * Returns either $a or $default, whichever is not empty.
- * <br><br>
- * Returns $a if it is not empty (null or empty string), otherwise returns the $default value.
+ * Returns either `$a` or `$b`, whichever is not empty. If both are empty, returns `$c` (defaults to `null`).
+ *
+ * <p>**Note:** an empty value is `null` or an empty string.
  *
  * @param mixed $a
- * @param mixed $default
- *
+ * @param mixed $b
+ * @param mixed $c
  * @return mixed
+ * @see when
+ * @see iftrue
  */
-function either ($a = null, $default = null)
+function either ($a, $b, $c = null)
 {
-  return isset($a) && $a !== '' ? $a : $default;
+  return isset($a) && $a !== '' ? $a : (isset($b) && $b !== '' ? $b : $c);
 }
 
-function firstNonNull ($a = null, $b = null, $c = null, $d = null)
+/**
+ * Returns the first argument that is not empty, or `null` if none is found.
+ *
+ * <p>**Note:** an empty value is `null` or an empty string.
+ *
+ * @param mixed ...$args
+ * @return mixed|null
+ */
+function coalesce ()
 {
-  if (isset($a)) return $a;
-  if (isset($b)) return $b;
-  if (isset($c)) return $c;
-  if (isset($d)) return $d;
+  foreach (func_get_args() as $a)
+    if (isset($a) && $a !== '') return $a;
   return null;
 }
 
-function ifset ($exp, $a, $b = null)
-{
-  if (isset($exp) && $exp !== '')
-    return $a;
-  return $b;
-}
-
+/**
+ * Returns `$a` if `$exp` is *truthy* (not 0, `null` or an empty string, excluding `'0'`), otherwise it returns `$b`
+ * or `null` if `$b` is not specified.
+ *
+ * @param mixed $exp
+ * @param mixed $a
+ * @param mixed $b
+ * @return mixed
+ * @see when
+ * @see either
+ */
 function iftrue ($exp, $a, $b = null)
 {
-  return $exp ? $a : $b;
+  return $exp && $exp !== '0' ? $a : $b;
 }
 
+/**
+ * Returns `$a` if `$exp` is not *empty*, otherwise it returns `$b` or `null` if `$b` is not specified.
+ *
+ * <p>**Note:** an empty value is `null` or an empty string.
+ *
+ * <p>**Note: `$a` is returned even if `$exp` is `false`!**
+ *
+ * <p>**Warning:** unline the ternary ? operator, all arguments are always evaluated, regardless of the value of
+ * `$exp`.
+ * @param boolean $exp
+ * @param mixed   $a
+ * @param mixed   $b
+ * @return mixed
+ * @see either
+ * @see iftrue
+ */
 function when ($exp, $a, $b = null)
 {
-  return $exp ? $a : $b;
+  return isset($exp) && $exp !== '' ? $a : $b;
 }
 
+/**
+ * Builds a string with a list of the given items that are not empty, delimited by `$delimiter`.
+ *
+ * <p>**Note:** an empty value is `null` or an empty string.
+ *
+ * @param string $delimiter
+ * @param mixed ...$args
+ * @return string
+ */
 function enum ($delimiter)
 {
-  $r = [];
-  $t = func_num_args ();
-  for ($n = 1; $n < $t; ++$n) {
-    $v = func_get_arg ($n);
-    if (!empty($v))
-      $r[] = $v;
-  }
-  return join ($delimiter, $r);
+  $args = func_get_args();
+  array_shift($args);
+  return join ($delimiter, array_prune ($args));
 }
 

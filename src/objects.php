@@ -110,3 +110,21 @@ function extendNonEmpty ($target, $src)
     else throw new InvalidArgumentException('Invalid target for ' . __FUNCTION__);
   }
 }
+
+/**
+ * Extracts the values with the given keys from a given object, in the same order as the key list.
+ *
+ * @param object $o    The object.
+ * @param array  $keys A list of keys to be extracted.
+ * @param mixed  $def  An optional default value to be returned for non-existing keys.
+ *
+ * @return array The list of extracted values.
+ */
+function object_fields ($o, array $keys, $def = null)
+{
+  $o = [];
+  foreach ($keys as $k)
+    $o[] = isset($o->$k) ? $o->$k : $def;
+  return $o;
+}
+
