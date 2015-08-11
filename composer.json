@@ -25,12 +25,14 @@
       "src/datetime.php",
       "src/expressions.php",
       "src/functions.php",
-      "src/meta.php",
       "src/mixed.php",
       "src/objects.php",
       "src/runtime.php",
       "src/strings.php",
-      "src/system.php"
+      "src/system.php",
+      "src/PhpCode.php",
+      "src/PowerArray.php",
+      "src/PowerString.php"
     ]
   }
 }
