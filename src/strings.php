@@ -215,16 +215,6 @@ function taggedStrLen ($str)
   return mb_strlen (preg_replace ('/<[^>]*>/u', '', $str));
 }
 
-function codepoint_encode ($str)
-{
-  return substr (json_encode ($str), 1, -1);
-}
-
-function codepoint_decode ($str)
-{
-  return json_decode (sprintf ('"%s"', $str));
-}
-
 function mb_chr ($ord, $encoding = 'UTF-8')
 {
   if ($encoding === 'UCS-4BE') {
@@ -245,16 +235,4 @@ function mb_ord ($char, $encoding = 'UTF-8')
   else {
     return mb_ord (mb_convert_encoding ($char, 'UCS-4BE', $encoding), 'UCS-4BE');
   }
-}
-
-function mb_htmlentities ($string, $hex = true, $encoding = 'UTF-8')
-{
-  return preg_replace_callback ('/[\x{80}-\x{10FFFF}]/u', function ($match) use ($hex) {
-    return sprintf ($hex ? '&#x%X;' : '&#%d;', mb_ord ($match[0]));
-  }, $string);
-}
-
-function mb_html_entity_decode ($string, $flags = null, $encoding = 'UTF-8')
-{
-  return html_entity_decode ($string, ($flags === null) ? ENT_COMPAT | ENT_HTML401 : $flags, $encoding);
 }
