@@ -1,18 +1,33 @@
 <?php
 
-class HyperArray
+class PowerArray implements ArrayAccess, Countable, IteratorAggregate
 {
-  public $data;
+  private $data;
 
   /**
-   * Creates an uninitialized instance of A that should not be used until the `data` property is set.
+   * Creates an uninitialized instance of `PowerArray` that should not be used until the `data` property is set.
    *
-   * Use {@see HyperArray::of()} or {@see HyperArray::on()} for creating instances.
+   * Use {@see PowerArray::of()} or {@see PowerArray::on()} for creating instances.
    */
   protected function __construct () { }
 
   /**
-   * Creates an instance of HyperArray that handles a copy (on write) of the given array.
+   * Typecasts the given array variable to a `PowerArray` that wraps that array.
+   *
+   * <p>**Warning:** the variable passed as argument will be converted to an instance of `PowerArray`.
+   * @param array $src A variable of type array.
+   * @return static The same value of `$src` after the typecast.
+   */
+  static function cast (array & $src)
+  {
+    $x       = new static;
+    $x->data = $src;
+    $src &= $x;
+    return $x;
+  }
+
+  /**
+   * Creates an instance of `PowerArray` that handles a copy (on write) of the given array.
    * @param array $src
    * @return static
    */
@@ -22,16 +37,16 @@ class HyperArray
   }
 
   /**
-   * Returns a singleton instance of HyperArray that modifies the given array.
+   * Returns a singleton instance of `PowerArray` that modifies the given array.
    * <p>**Warning:** this method returns **always** the same instance. This is meant to be a wrapper for applying
    * extension methods to an existing array variable. You should **not** store the instance anywhere, as it will lead
-   * to unexpected problems. If  you need to do that, use {@see HyperArray::of} instead.
+   * to unexpected problems. If  you need to do that, use {@see PowerArray::of} instead.
    * @param array $src
    * @return static
    */
   static function wrap (array & $src)
   {
-    $x       = new static;
+    static $x = new static;
     $x->data =& $src;
     return $x;
   }
@@ -96,6 +111,17 @@ class HyperArray
     unset ($this->data[$key]);
   }
 
+  function all ()
+  {
+    return $this->data;
+  }
+
+  function append ()
+  {
+    call_user_func_array ('array_push', array_merge ($this->data, func_get_args ()));
+    return $this;
+  }
+
   /**
    * Searches for an element on a **sorted** array.
    *
@@ -110,16 +136,9 @@ class HyperArray
     return array_binarySearch ($this->data, $what, $probe, $comparator);
   }
 
-  /**
-   * Merges another array or instance of this class with this one.
-   * @param array|HyperArray $v
-   */
-  function concat ($v)
+  public function count ()
   {
-    if (is_array ($v)) array_concat ($this->data, $v);
-    else if ($v instanceof static)
-      array_concat ($this->data, $v->data);
-    else throw new InvalidArgumentException;
+    return count ($this->data);
   }
 
   /**
@@ -129,7 +148,7 @@ class HyperArray
    *
    * @param array $keys The keys of the values to be extracted from each $array element.
    *
-   * @return HyperArray Self, for chaining.
+   * @return $this Self, for chaining.
    */
   function extract (array $keys)
   {
@@ -142,8 +161,8 @@ class HyperArray
    *
    * @param array $keys A list of keys to be extracted.
    * @param mixed $def  An optional default value to be returned for non-existing keys.
-   * @return HyperArray Self, for chaining.
-   * @see HyperArray::extract
+   * @return $this Self, for chaining.
+   * @see PowerArray::extract
    */
   function fields (array $keys, $def = null)
   {
@@ -158,7 +177,7 @@ class HyperArray
    *
    * @param callable $fn
    *
-   * @return HyperArray Self, for chaining.
+   * @return $this Self, for chaining.
    */
   function filter (callable $fn)
   {
@@ -177,7 +196,7 @@ class HyperArray
    * @param mixed  $val
    * @param bool   $strict TRUE to perform strict equality testing.
    *
-   * @return HyperArray Self, for chaining.
+   * @return $this Self, for chaining.
    */
   function find ($fld, $val, $strict = false)
   {
@@ -193,12 +212,17 @@ class HyperArray
    * @param mixed  $val
    * @param bool   $strict TRUE to perform strict equality testing.
    *
-   * @return HyperArray Self, for chaining.
+   * @return $this Self, for chaining.
    */
   function findAll ($fld, $val, $strict = false)
   {
     $this->data = array_findAll ($this->data, $fld, $val, $strict);
     return $this;
+  }
+
+  function first ()
+  {
+    return $this->data[0];
   }
 
   /**
@@ -210,7 +234,7 @@ class HyperArray
    *
    * @param int|string $key Null value is not supported.
    *
-   * @return HyperArray Self, for chaining.
+   * @return $this Self, for chaining.
    */
   function getColumn ($key)
   {
@@ -227,12 +251,17 @@ class HyperArray
    *
    * @param array $keys A list of integer or string keys.
    *
-   * @return HyperArray Self, for chaining.
+   * @return $this Self, for chaining.
    */
   function getColumns (array $keys)
   {
     $this->data = array_getColumns ($this->data, $keys);
     return $this;
+  }
+
+  public function getIterator ()
+  {
+    return $this->data;
   }
 
   /**
@@ -321,7 +350,7 @@ class HyperArray
    * ]
    * ```
    * @param string ...$args The field names.
-   * @return HyperArray Self, for chaining.
+   * @return $this Self, for chaining.
    */
   function group ()
   {
@@ -330,11 +359,11 @@ class HyperArray
   }
 
   /**
-   * Converts a PHP array of maps to an array if instances of the specified class.
+   * Converts a PHP array of maps to an array of instances of the specified class.
    *
    * @param string $className
    *
-   * @return HyperArray Self, for chaining.
+   * @return $this Self, for chaining.
    */
   function hidrate ($className)
   {
@@ -347,12 +376,27 @@ class HyperArray
    * Array items should be arrays or objects.
    *
    * @param string $field The field name.
-   * @return HyperArray Self, for chaining.
+   * @return $this Self, for chaining.
    */
   function indexBy ($field)
   {
     $this->data = array_indexBy ($this->data, $field);
     return $this;
+  }
+
+  /**
+   * Gets the key of the first element of the array that matches a given value.
+   * @param mixed $value  The value to search for.
+   * @param bool  $strict Determines if strict comparison (===) should be used during the search.
+   *
+   * @return mixed|false The key for needle if it is found in the array, false otherwise.
+   *                     If needle is found in haystack more than once, the first matching key is returned. To
+   *                     return the keys for all matching values, use array_keys with the optional search_value
+   *                     parameter instead.
+   */
+  function indexOf ($value, $strict = true)
+  {
+    return array_search ($value, $this->data, $strict);
   }
 
   /**
@@ -362,7 +406,7 @@ class HyperArray
    * @param array    $cols
    * @param callable $fn
    *
-   * @return HyperArray Self, for chaining.
+   * @return $this Self, for chaining.
    */
   function iterateColumns (array $cols, callable $fn)
   {
@@ -374,16 +418,43 @@ class HyperArray
    * Merges records from two arrays using the specified primary key field.
    * When keys collide, the corresponding values are assumed to be arrays and they are merged.
    *
-   * @param array|HyperArray $array
-   * @param string  $field
+   * @param array|PowerArray $array
+   * @param string           $field
    *
-   * @return HyperArray Self, for chaining.
+   * @return $this Self, for chaining.
    */
   function join ($array, $field)
   {
     // NOT IMPLEMENTED!!! DUMMY CODE!
     $this->data = array_join ($this->data, $array instanceof self ? $array->data : $array, $field);
     return $this;
+  }
+
+  /**
+   * Gets all the keys of the array.
+   * @return $this Self, for chaining.
+   */
+  function keys ()
+  {
+    $this->data = array_keys ($this->data);
+    return $this;
+  }
+
+  /**
+   * Gets all the keys of the array that match a given value.
+   * @param mixed      $value  Only keys containing these values are returned.
+   * @param bool|false $strict Determines if strict comparison (===) should be used during the search.
+   * @return $this
+   */
+  function keysOf ($value, $strict = true)
+  {
+    $this->data = array_keys ($this->data, $value, $strict);
+    return $this;
+  }
+
+  function last ()
+  {
+    return array_slice ($this->data, -1);
   }
 
   /**
@@ -396,7 +467,7 @@ class HyperArray
    * key parameter as a reference and modifies the key.
    *
    * @param callable $fn The callback.
-   * @return HyperArray Self, for chaining.
+   * @return $this Self, for chaining.
    */
   function map (callable $fn)
   {
@@ -413,12 +484,24 @@ class HyperArray
    * @param array    $cols
    * @param callable $fn
    *
-   * @return HyperArray Self, for chaining.
+   * @return $this Self, for chaining.
    */
   function mapColumns (array $cols, callable $fn)
   {
     $this->data = array_mapColumns ($this->data, $cols, $fn);
     return $this;
+  }
+
+  /**
+   * Merges another array or instance of this class with this one.
+   * @param array|PowerArray $v
+   */
+  function merge ($v)
+  {
+    if (is_array ($v)) array_concat ($this->data, $v);
+    else if ($v instanceof static)
+      array_concat ($this->data, $v->data);
+    else throw new InvalidArgumentException;
   }
 
   /**
@@ -435,11 +518,31 @@ class HyperArray
     return missing ($this->data, $key);
   }
 
+  public function offsetExists ($offset)
+  {
+    return isset ($this->data[$offset]);
+  }
+
+  public function offsetGet ($offset)
+  {
+    return isset ($this->data[$offset]) ? $this->data[$offset] : null;
+  }
+
+  public function offsetSet ($offset, $value)
+  {
+    $this->data[$offset] = $value;
+  }
+
+  public function offsetUnset ($offset)
+  {
+    unset ($this->data[$offset]);
+  }
+
   /**
    * Sorts the array by one or more field values.
    * Ex: orderBy ($data, 'volume', SORT_DESC, 'edition', SORT_ASC);
    *
-   * @return HyperArray Self, for chaining.
+   * @return $this Self, for chaining.
    */
   function orderBy ()
   {
@@ -447,13 +550,83 @@ class HyperArray
     return $this;
   }
 
+  function pop ()
+  {
+    return array_pop ($this->data);
+  }
+
+  function prepend ()
+  {
+    call_user_func_array ('array_unshift', array_merge ($this->data, func_get_args ()));
+    return $this;
+  }
+
   /**
    * Returns the input array stripped of empty elements (those that are either `null` or empty strings).
-   * @return HyperArray Self, for chaining.
+   * @return $this Self, for chaining.
    */
   function prune ()
   {
     $this->data = array_prune ($this->data);
+    return $this;
+  }
+
+  /**
+   * Iteratively reduce the array to a single value using a callback function.
+   * @param callable $fn      The callback function.
+   * @param mixed    $initial If the optional initial is available, it will be used at the beginning of the process, or
+   *                          as a final result in case the array is empty.
+   * @return mixed The resulting value. If the array is empty and initial is not passed, it returns `null`.
+   */
+  function reduce (callable $fn, $initial = null)
+  {
+    return array_reduce ($this->data, $fn, $initial);
+  }
+
+  function shift ()
+  {
+    return array_shift ($this->data);
+  }
+
+  /**
+   * Extract a slice of the array.
+   * @param int  $start        If offset is non-negative, the sequence will start at that offset in the array. If
+   *                           offset is negative, the sequence will start that far from the end of the array.
+   * @param int  $len          If length is given and is positive, then the sequence will have that many elements
+   *                           in it. If length is given and is negative then the sequence will stop that many
+   *                           elements from the end of the array. If it is omitted, then the sequence will have
+   *                           everything from offset up until the end of the array.
+   * @param bool $preserveKeys Note that `slice()` will reorder and reset the array indices by default. You can
+   *                           change this behaviour by setting `$preserveKeys` to true.
+   * @return array
+   */
+  function slice ($start, $len, $preserveKeys = false)
+  {
+    return array_slice ($this->data, $start, $len, $preserveKeys);
+  }
+
+  /**
+   * Remove a portion of the array and replace it with something else.
+   * @param int        $offset      If offset is positive then the start of removed portion is at that offset from the
+   *                                beginning of the input array. If offset is negative then it starts that far from
+   *                                the end of the input array.
+   * @param int|null   $length      If length is omitted, removes everything from offset to the end of the array. If
+   *                                length is specified and is positive, then that many elements will be removed. If
+   *                                length is specified and is negative then the end of the removed portion will be
+   *                                that many elements from the end of the array. Tip: to remove everything from offset
+   *                                to the end of the array when replacement is also specified, use count($input) for
+   *                                length.
+   * @param array|null $replacement If replacement array is specified, then the removed elements are replaced with
+   *                                elements from this array. If offset and length are such that nothing is removed,
+   *                                then the elements from the replacement array are inserted in the place specified by
+   *                                the offset. Note that keys in replacement array are not preserved. If replacement
+   *                                is just one element it is not necessary to put array() around it, unless the
+   *                                element is an array itself.
+   * @return $this Self, for chaining.
+   */
+  function splice ($offset, $length = null, array $replacement = null)
+  {
+    array_splice ($this->data, $offset, $length, $replacement);
     return $this;
   }
 
@@ -467,6 +640,19 @@ class HyperArray
   function toClass ($className)
   {
     return array_toClass ($this->data, $className);
+  }
+
+  /**
+   * Reindexes the current data into a series of sequential integer keys.
+   *
+   * This is useful to extract the data as a linear array with no discontinuous keys.
+   *
+   * @return $this Self, for chaining.
+   */
+  function reindex ()
+  {
+    $this->data = array_values ($this->data);
+    return $this;
   }
 
 }
