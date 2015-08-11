@@ -11,8 +11,20 @@ function ps_of ($str = '')
 }
 
 /**
+ * Reuses the same singleton instance of `PowerString` to wrap the given string.
+ *
+ * This has increased performance, but it should be used with care.
+ * @param string $str Variable.
+ * @return PowerString
+ */
+function ps_on (& $str)
+{
+  return PowerString::on ($str);
+}
+
+/**
  * Converts a string variable to an instance of `PowerString`.
- * @param string $str
+ * @param string $str Variable.
  * @return PowerString
  */
 function to_ps (& $str)

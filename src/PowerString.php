@@ -50,7 +50,7 @@ class PowerString implements Countable, IteratorAggregate, ArrayAccess
    * @param string $src
    * @return static
    */
-  static function wrap (& $src)
+  static function on (& $src)
   {
     static $x = new static;
     $x->str =& $src;

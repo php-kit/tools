@@ -134,6 +134,13 @@ function includeFile ($filename)
   return $path ? require $path : false;
 }
 
+/**
+ * Loads the specified file, optionally searching the include path, and stripping the Unicode Byte Order Mark (BOM), if
+ * one is present.
+ * @param string    $filename
+ * @param bool|true $useIncludePath
+ * @return false|string `false` if the file is not found.
+ */
 function loadFile ($filename, $useIncludePath = true)
 {
   if ($useIncludePath) {

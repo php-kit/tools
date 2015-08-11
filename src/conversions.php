@@ -47,12 +47,7 @@ function toFloat ($val)
 {
   if (is_null ($val) || $val === '')
     return null;
-  $val = str_replace (str_replace (',', '.', $val), ' ', '');
+  $val = str_replace (' ', '',str_replace (',', '.', $val));
   return floatval ($val);
-}
-
-function convertToInt (&$variable)
-{
-  $variable = intval ($variable);
 }
 

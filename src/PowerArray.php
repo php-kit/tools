@@ -44,7 +44,7 @@ class PowerArray implements ArrayAccess, Countable, IteratorAggregate
    * @param array $src
    * @return static
    */
-  static function wrap (array & $src)
+  static function on (array & $src)
   {
     static $x = new static;
     $x->data =& $src;

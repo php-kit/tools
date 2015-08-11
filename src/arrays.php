@@ -1,10 +1,33 @@
 <?php
 
+/**
+ * Creates a new instance of `PowerArray` from the given array.
+ * @param array $a
+ * @return PowerArray
+ */
+
 function pa_of (array $a = [])
 {
   return PowerArray::of ($a);
 }
 
+/**
+ * Reuses the same singleton instance of `PowerArray` to wrap the given array.
+ *
+ * This has increased performance, but it should be used with care.
+ * @param array $a Variable.
+ * @return PowerArray
+ */
+function pa_on (array & $a)
+{
+  return PowerArray::on ($a);
+}
+
+/**
+ * Converts an array variable to an instance of `PowerArray`.
+ * @param array $a Variable.
+ * @return PowerArray
+ */
 function to_pa (array & $a)
 {
   return PowerArray::cast ($a);

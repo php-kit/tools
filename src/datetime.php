@@ -27,40 +27,33 @@ function timePart ($isoDateStr)
 }
 
 /**
- * Tests if the given string encodes a date in the specified format.
- * By default, it tests the ISO8601 format.
+ * Tests if the given string encodes a valid date and time in the specified format.
+ * <p>By default, it tests the ISO8601 format.
+ * <p>**Note:** wrong dates, like 30 of February, will fail validation.
  *
  * @param string $date
  * @param string $format
  *
  * @return int
  */
-function is_date ($date, $format = 'Y-m-d H:i:s')
+function is_datetime ($date, $format = 'Y-m-d H:i:s')
 {
   $d = DateTime::createFromFormat ($format, $date);
   return $d && $d->format ($format) == $date;
 }
 
 /**
- * Human-friendly textual descriptions for some dates.
- * For use by humanizeDate().
- */
-$HUMANIZE_DATE_STR = [
-  'today'     => 'Hoje, às',
-  'yesterday' => 'Ontem, às',
-];
-/**
- * For the specified date, if its today or yesterday, it replaces it with a textual description.
+ * Tests if the given string encodes a valid date in the specified format.
+ * <p>By default, it tests the ISO8601 format.
+ * <p>**Note:** wrong dates or times, like 30 of February, will fail validation.
  *
  * @param string $date
+ * @param string $format
  *
- * @return string
+ * @return int
  */
-function humanizeDate ($date)
+function is_date ($date, $format = 'Y-m-d')
 {
-  global $HUMANIZE_DATE_STR;
-  $today     = Date ('Y-m-d');
-  $yesterday = Date ('Y-m-d', strtotime ("-1 days"));
-  return str_replace ($yesterday, $HUMANIZE_DATE_STR['yesterday'],
-    str_replace ($today, $HUMANIZE_DATE_STR['today'], $date));
+  $d = DateTime::createFromFormat ($format, $date);
+  return $d && $d->format ($format) == $date;
 }
