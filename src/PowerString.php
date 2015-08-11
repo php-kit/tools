@@ -52,7 +52,8 @@ class PowerString implements Countable, IteratorAggregate, ArrayAccess
    */
   static function on (& $src)
   {
-    static $x = new static;
+    static $x;
+    if (!isset($x)) $x = new static;
     $x->str =& $src;
     return $x;
   }
