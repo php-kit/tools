@@ -168,3 +168,13 @@ function enum ($delimiter)
   return join ($delimiter, array_prune ($args));
 }
 
+/**
+ * Swaps the values of the given variables.
+ * @param mixed $a A variable.
+ * @param mixed $b A variable.
+ */
+function swap (& $a, & $b) {
+  $x = $a;
+  $a = $b;
+  $b = $x;
+}

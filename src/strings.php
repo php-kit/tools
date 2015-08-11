@@ -1,6 +1,26 @@
 <?php
 
 /**
+ * Creates a new instance of `PowerString` from the given string.
+ * @param string $str
+ * @return PowerString
+ */
+function ps_of ($str = '')
+{
+  return PowerString::of ($str);
+}
+
+/**
+ * Converts a string variable to an instance of `PowerString`.
+ * @param string $str
+ * @return PowerString
+ */
+function to_ps (& $str)
+{
+  return PowerString::cast ($str);
+}
+
+/**
  * Truncates a string to a certain length and appends ellipsis to it.
  *
  * @param string $text
@@ -17,6 +37,7 @@ function str_truncate ($text, $limit, $ending = '...')
     $text = substr ($text, 0, -(strlen (strrchr ($text, ' '))));
     $text = $text . $ending;
   }
+
   return $text;
 }
 
@@ -35,8 +56,10 @@ function str_cut ($text, $limit, $more = '...')
     $chars = floor (($limit - strlen ($more)) / 2);
     $p     = strpos ($text, ' ', $chars) + 1;
     $d     = $p < 1 ? 0 : $p - $chars;
+
     return substr ($text, 0, $chars + $d) . $more . substr ($text, -$chars + $d);
   }
+
   return $text;
 }
 
@@ -120,6 +143,7 @@ function trimText ($text, $maxSize)
     return $text;
   $a = explode (' ', substr ($text, 0, $maxSize));
   array_pop ($a);
+
   return join (' ', $a) . ' (...)';
 }
 
@@ -135,7 +159,6 @@ function trimHTMLText ($text, $maxSize)
   $a = explode (' ', $text);
   array_pop ($a);
   $text = join (' ', $a) . ' (...)';
-  $c    = 0;
   $tags = [];
   if (preg_match_all ('#<.*?>#', $text, $matches)) {
     foreach ($matches[0] as $match)
@@ -151,6 +174,7 @@ function trimHTMLText ($text, $maxSize)
       $text .= "</$tag>";
     }
   }
+
   return $text;
 }
 
@@ -172,6 +196,7 @@ function coloredStrPad ($str, $width, $align = STR_PAD_RIGHT)
   $w    = coloredStrLen ($str);
   $rawW = mb_strlen ($str);
   $d    = $rawW - $w;
+
   return mb_str_pad ($str, $width + $d, ' ', $align);
 }
 
@@ -186,3 +211,56 @@ function coloredStrLen ($str)
   return mb_strlen (preg_replace ('/<[^>]*>/u', '', $str));
 }
 
+function codepoint_encode ($str)
+{
+  return substr (json_encode ($str), 1, -1);
+}
+
+function codepoint_decode ($str)
+{
+  return json_decode (sprintf ('"%s"', $str));
+}
+
+function mb_internal_encoding ($encoding = null)
+{
+  return ($encoding === null) ? iconv_get_encoding () : iconv_set_encoding ('internal_encoding',$encoding);
+}
+
+function mb_convert_encoding ($str, $to_encoding, $from_encoding = null)
+{
+  return iconv (($from_encoding === null) ? mb_internal_encoding () : $from_encoding, $to_encoding, $str);
+}
+
+function mb_chr ($ord, $encoding = 'UTF-8')
+{
+  if ($encoding === 'UCS-4BE') {
+    return pack ("N", $ord);
+  }
+  else {
+    return mb_convert_encoding (mb_chr ($ord, 'UCS-4BE'), $encoding, 'UCS-4BE');
+  }
+}
+
+function mb_ord ($char, $encoding = 'UTF-8')
+{
+  if ($encoding === 'UCS-4BE') {
+    list(, $ord) = (strlen ($char) === 4) ? @unpack ('N', $char) : @unpack ('n', $char);
+
+    return $ord;
+  }
+  else {
+    return mb_ord (mb_convert_encoding ($char, 'UCS-4BE', $encoding), 'UCS-4BE');
+  }
+}
+
+function mb_htmlentities ($string, $hex = true, $encoding = 'UTF-8')
+{
+  return preg_replace_callback ('/[\x{80}-\x{10FFFF}]/u', function ($match) use ($hex) {
+    return sprintf ($hex ? '&#x%X;' : '&#%d;', mb_ord ($match[0]));
+  }, $string);
+}
+
+function mb_html_entity_decode ($string, $flags = null, $encoding = 'UTF-8')
+{
+  return html_entity_decode ($string, ($flags === null) ? ENT_COMPAT | ENT_HTML401 : $flags, $encoding);
+}
