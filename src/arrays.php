@@ -1,8 +1,13 @@
 <?php
 
-function A (array $a = [])
+function a_of (array $a = [])
 {
-  return A::of ($a);
+  return HyperArray::of ($a);
+}
+
+function for_a (array & $a)
+{
+  return HyperArray::wrap ($a);
 }
 
 /**
@@ -79,7 +84,7 @@ function array_extract (array $array, array $keys)
  * @param array $a    The source data.
  * @param array $keys The keys of the values to be extracted from each $array element.
  * @param mixed $def  An optional default value to be returned for non-existing keys.
- * @return A Self, for chaining.
+ * @return HyperArray Self, for chaining.
  */
 function extract (array $a, array $keys, $def = null)
 {
@@ -369,7 +374,7 @@ function array_hidrate (array $array, $className)
  *
  * @param array  $a     The source data.
  * @param string $field The field name.
- * @return A Self, for chaining.
+ * @return HyperArray Self, for chaining.
  */
 function array_indexBy (array $a, $field)
 {

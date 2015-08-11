@@ -1,18 +1,18 @@
 <?php
 
-class A
+class HyperArray
 {
   public $data;
 
   /**
    * Creates an uninitialized instance of A that should not be used until the `data` property is set.
    *
-   * Use {@see A::of()} or {@see A::on()} for creating instances.
+   * Use {@see HyperArray::of()} or {@see HyperArray::on()} for creating instances.
    */
   protected function __construct () { }
 
   /**
-   * Creates an instance of A that handles a copy of the given array.
+   * Creates an instance of HyperArray that handles a copy (on write) of the given array.
    * @param array $src
    * @return static
    */
@@ -22,11 +22,14 @@ class A
   }
 
   /**
-   * Creates an instance of A that modifies the given array.
+   * Returns a singleton instance of HyperArray that modifies the given array.
+   * <p>**Warning:** this method returns **always** the same instance. This is meant to be a wrapper for applying
+   * extension methods to an existing array variable. You should **not** store the instance anywhere, as it will lead
+   * to unexpected problems. If  you need to do that, use {@see HyperArray::of} instead.
    * @param array $src
    * @return static
    */
-  static function on (array & $src)
+  static function wrap (array & $src)
   {
     $x       = new static;
     $x->data =& $src;
@@ -102,14 +105,14 @@ class A
    *
    * @return bool True a match was found.
    */
-  function array_binarySearch ($what, &$probe, $comparator)
+  function binarySearch ($what, &$probe, $comparator)
   {
     return array_binarySearch ($this->data, $what, $probe, $comparator);
   }
 
   /**
    * Merges another array or instance of this class with this one.
-   * @param array|A $v
+   * @param array|HyperArray $v
    */
   function concat ($v)
   {
@@ -126,7 +129,7 @@ class A
    *
    * @param array $keys The keys of the values to be extracted from each $array element.
    *
-   * @return A Self, for chaining.
+   * @return HyperArray Self, for chaining.
    */
   function extract (array $keys)
   {
@@ -139,8 +142,8 @@ class A
    *
    * @param array $keys A list of keys to be extracted.
    * @param mixed $def  An optional default value to be returned for non-existing keys.
-   * @return A Self, for chaining.
-   * @see A::extract
+   * @return HyperArray Self, for chaining.
+   * @see HyperArray::extract
    */
   function fields (array $keys, $def = null)
   {
@@ -155,7 +158,7 @@ class A
    *
    * @param callable $fn
    *
-   * @return A Self, for chaining.
+   * @return HyperArray Self, for chaining.
    */
   function filter (callable $fn)
   {
@@ -174,7 +177,7 @@ class A
    * @param mixed  $val
    * @param bool   $strict TRUE to perform strict equality testing.
    *
-   * @return A Self, for chaining.
+   * @return HyperArray Self, for chaining.
    */
   function find ($fld, $val, $strict = false)
   {
@@ -190,7 +193,7 @@ class A
    * @param mixed  $val
    * @param bool   $strict TRUE to perform strict equality testing.
    *
-   * @return A Self, for chaining.
+   * @return HyperArray Self, for chaining.
    */
   function findAll ($fld, $val, $strict = false)
   {
@@ -207,7 +210,7 @@ class A
    *
    * @param int|string $key Null value is not supported.
    *
-   * @return A Self, for chaining.
+   * @return HyperArray Self, for chaining.
    */
   function getColumn ($key)
   {
@@ -224,7 +227,7 @@ class A
    *
    * @param array $keys A list of integer or string keys.
    *
-   * @return A Self, for chaining.
+   * @return HyperArray Self, for chaining.
    */
   function getColumns (array $keys)
   {
@@ -318,7 +321,7 @@ class A
    * ]
    * ```
    * @param string ...$args The field names.
-   * @return A Self, for chaining.
+   * @return HyperArray Self, for chaining.
    */
   function group ()
   {
@@ -331,7 +334,7 @@ class A
    *
    * @param string $className
    *
-   * @return A Self, for chaining.
+   * @return HyperArray Self, for chaining.
    */
   function hidrate ($className)
   {
@@ -344,7 +347,7 @@ class A
    * Array items should be arrays or objects.
    *
    * @param string $field The field name.
-   * @return A Self, for chaining.
+   * @return HyperArray Self, for chaining.
    */
   function indexBy ($field)
   {
@@ -359,7 +362,7 @@ class A
    * @param array    $cols
    * @param callable $fn
    *
-   * @return A Self, for chaining.
+   * @return HyperArray Self, for chaining.
    */
   function iterateColumns (array $cols, callable $fn)
   {
@@ -371,10 +374,10 @@ class A
    * Merges records from two arrays using the specified primary key field.
    * When keys collide, the corresponding values are assumed to be arrays and they are merged.
    *
-   * @param array|A $array
+   * @param array|HyperArray $array
    * @param string  $field
    *
-   * @return A Self, for chaining.
+   * @return HyperArray Self, for chaining.
    */
   function join ($array, $field)
   {
@@ -393,7 +396,7 @@ class A
    * key parameter as a reference and modifies the key.
    *
    * @param callable $fn The callback.
-   * @return A Self, for chaining.
+   * @return HyperArray Self, for chaining.
    */
   function map (callable $fn)
   {
@@ -410,7 +413,7 @@ class A
    * @param array    $cols
    * @param callable $fn
    *
-   * @return A Self, for chaining.
+   * @return HyperArray Self, for chaining.
    */
   function mapColumns (array $cols, callable $fn)
   {
@@ -436,7 +439,7 @@ class A
    * Sorts the array by one or more field values.
    * Ex: orderBy ($data, 'volume', SORT_DESC, 'edition', SORT_ASC);
    *
-   * @return A Self, for chaining.
+   * @return HyperArray Self, for chaining.
    */
   function orderBy ()
   {
@@ -446,7 +449,7 @@ class A
 
   /**
    * Returns the input array stripped of empty elements (those that are either `null` or empty strings).
-   * @return A Self, for chaining.
+   * @return HyperArray Self, for chaining.
    */
   function prune ()
   {
