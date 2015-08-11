@@ -126,7 +126,7 @@ function fx ($exp)
  *
  * @return callable
  */
-function constant ($i)
+function constantFn ($i)
 {
   return function () use ($i) {
     return $i;

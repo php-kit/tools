@@ -184,16 +184,18 @@ function strJoin ($s1, $s2, $delimiter)
 }
 
 /**
- * Performs padding on strings having embedded color tags.
+ * Performs padding on strings having embedded tags.
+ *
+ * This is specially useful when used with color-tagged strings meant for terminal output.
  * > Ex: `"<color-name>text</color-name>"`
  * @param string $str
  * @param int    $width The desired minimum width, in characters.
  * @param int    $align One of the STR_PAD_XXX constants.
  * @return string
  */
-function coloredStrPad ($str, $width, $align = STR_PAD_RIGHT)
+function taggedStrPad ($str, $width, $align = STR_PAD_RIGHT)
 {
-  $w    = coloredStrLen ($str);
+  $w    = taggedStrLen ($str);
   $rawW = mb_strlen ($str);
   $d    = $rawW - $w;
 
@@ -202,11 +204,13 @@ function coloredStrPad ($str, $width, $align = STR_PAD_RIGHT)
 
 /**
  * Returns the true length of strings having embedded color tags.
+ *
+ * This is specially useful when used with color-tagged strings meant for terminal output.
  * > Ex: `"<color-name>text</color-name>"`
  * @param string $str
  * @return int The string's length, in characters.
  */
-function coloredStrLen ($str)
+function taggedStrLen ($str)
 {
   return mb_strlen (preg_replace ('/<[^>]*>/u', '', $str));
 }
@@ -219,16 +223,6 @@ function codepoint_encode ($str)
 function codepoint_decode ($str)
 {
   return json_decode (sprintf ('"%s"', $str));
-}
-
-function mb_internal_encoding ($encoding = null)
-{
-  return ($encoding === null) ? iconv_get_encoding () : iconv_set_encoding ('internal_encoding',$encoding);
-}
-
-function mb_convert_encoding ($str, $to_encoding, $from_encoding = null)
-{
-  return iconv (($from_encoding === null) ? mb_internal_encoding () : $from_encoding, $to_encoding, $str);
 }
 
 function mb_chr ($ord, $encoding = 'UTF-8')

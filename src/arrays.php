@@ -55,30 +55,6 @@ function array_concat (array &$a, array $b)
 /**
  * Generates a new array where each element is a list of values extracted from the corresponding element on the input
  * array.
- *
- * @param array $array The source array.
- * @param array $keys  The keys of the values to be extracted from each $array element.
- *
- * @return array As array with the same cardinality as the input array.
- */
-function array_extract (array $array, array $keys)
-{
-  if (empty($array))
-    return [];
-  if (is_array ($array[0]))
-    return array_map (function ($r) use ($keys) {
-      return array_fields ($r, $keys);
-    }, $array);
-  if (is_object ($array[0]))
-    return array_map (function ($r) use ($keys) {
-      return object_fields ($r, $keys);
-    }, $array);
-  throw new RuntimeException('Cannot invoke array_extract on an array of primitives.');
-}
-
-/**
- * Generates a new array where each element is a list of values extracted from the corresponding element on the input
- * array.
  * Result: array - An array with the same cardinality as the input array.
  *
  * @param array $a    The source data.
@@ -86,7 +62,7 @@ function array_extract (array $array, array $keys)
  * @param mixed $def  An optional default value to be returned for non-existing keys.
  * @return PowerArray Self, for chaining.
  */
-function extract (array $a, array $keys, $def = null)
+function array_extract (array $a, array $keys, $def = null)
 {
   return map ($a, function ($e) use ($keys, $def) { return array_fields ($e, $keys, $def); });
 }
