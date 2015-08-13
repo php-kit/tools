@@ -2,7 +2,13 @@
 
 class PowerString implements Countable, IteratorAggregate, ArrayAccess
 {
-  private $str = '';
+  /**
+   * The string representation of this instance.
+   *
+   * Treat this as read-only - **do not modify** it directly!
+   * @var string
+   */
+  public $S = '';
 
   /**
    * Creates a new instance of `PowerString`.
@@ -21,8 +27,8 @@ class PowerString implements Countable, IteratorAggregate, ArrayAccess
    */
   static function cast (& $src)
   {
-    $x      = new static;
-    $x->str = $src;
+    $x    = new static;
+    $x->S = $src;
     $src &= $x;
     return $x;
   }
@@ -54,7 +60,7 @@ class PowerString implements Countable, IteratorAggregate, ArrayAccess
   {
     static $x;
     if (!isset($x)) $x = new static;
-    $x->str =& $src;
+    $x->S =& $src;
     return $x;
   }
 
@@ -70,24 +76,24 @@ class PowerString implements Countable, IteratorAggregate, ArrayAccess
 
   function __toString ()
   {
-    return $this->str;
+    return $this->S;
   }
 
   function charAt ($index)
   {
-    $v = mb_substr ($this->str, $index, 1);
+    $v = mb_substr ($this->S, $index, 1);
     return $v === false ? '' : $v;
   }
 
   function charCodeAt ($index)
   {
-    $v = mb_substr ($this->str, $index, 1);
+    $v = mb_substr ($this->S, $index, 1);
     return $v === false ? 0 : mb_ord ($v);
   }
 
   function concat ()
   {
-    $this->str = $this->str . implode ('', func_get_args ());
+    $this->S = $this->S . implode ('', func_get_args ());
   }
 
   /**
@@ -104,12 +110,12 @@ class PowerString implements Countable, IteratorAggregate, ArrayAccess
    */
   function count ()
   {
-    return mb_strlen ($this->str);
+    return mb_strlen ($this->S);
   }
 
   function endsWith ($search, $pos = 0)
   {
-    return mb_substr ($this->str, $pos - strlen ($search)) === $search;
+    return mb_substr ($this->S, $pos - strlen ($search)) === $search;
   }
 
   function getIterator ()
@@ -119,41 +125,41 @@ class PowerString implements Countable, IteratorAggregate, ArrayAccess
 
   function includes ($search, $from = 0)
   {
-    return mb_strpos ($this->str, $search, $from) !== false;
+    return mb_strpos ($this->S, $search, $from) !== false;
   }
 
   function indexOf ($search, $from = 0)
   {
-    return mb_strpos ($this->str, $search, $from);
+    return mb_strpos ($this->S, $search, $from);
   }
 
   function lastIndexOf ($search, $from = 0)
   {
-    return mb_strrpos ($this->str, $search, $from);
+    return mb_strrpos ($this->S, $search, $from);
   }
 
   function length ()
   {
-    return mb_strlen ($this->str);
+    return mb_strlen ($this->S);
   }
 
   function match ($pattern, $flags = 0, $ofs = 0)
   {
     $isGlobal = self::toUnicodeRegex ($pattern);
     return $isGlobal
-      ? (preg_match_all ($pattern, $this->str, $m, $flags, $ofs) ? $m : false)
-      : (preg_match ($pattern, $this->str, $m, $flags, $ofs) ? $m : false);
+      ? (preg_match_all ($pattern, $this->S, $m, $flags, $ofs) ? $m : false)
+      : (preg_match ($pattern, $this->S, $m, $flags, $ofs) ? $m : false);
   }
 
   function normalize ($form)
   {
-    $this->str = Normalizer::normalize ($form);
+    $this->S = Normalizer::normalize ($form);
     return $this;
   }
 
   function offsetExists ($offset)
   {
-    return $offset < mb_strlen ($this->str) && $offset >= 0;
+    return $offset < mb_strlen ($this->S) && $offset >= 0;
   }
 
   function offsetGet ($offset)
@@ -163,102 +169,102 @@ class PowerString implements Countable, IteratorAggregate, ArrayAccess
 
   function offsetSet ($offset, $value)
   {
-    $this->str = mb_substr ($this->str, 0, $offset) . $value . mb_substr ($this->str, $offset + 1);
+    $this->S = mb_substr ($this->S, 0, $offset) . $value . mb_substr ($this->S, $offset + 1);
   }
 
   function offsetUnset ($offset)
   {
-    $this->str = mb_substr ($this->str, 0, $offset) . mb_substr ($this->str, $offset + 1);
+    $this->S = mb_substr ($this->S, 0, $offset) . mb_substr ($this->S, $offset + 1);
   }
 
   function repeat ($count)
   {
-    $this->str = str_repeat ($this->str, $count);
+    $this->S = str_repeat ($this->S, $count);
     return $this;
   }
 
   function replace ($pattern, $replace)
   {
-    $limit     = self::toUnicodeRegex ($pattern) ? -1 : 1;
-    $this->str = is_callable ($replace)
-      ? preg_replace_callback ($pattern, $replace, $this->str, $limit)
-      : preg_replace ($pattern, $replace, $this->str, $limit);
+    $limit   = self::toUnicodeRegex ($pattern) ? -1 : 1;
+    $this->S = is_callable ($replace)
+      ? preg_replace_callback ($pattern, $replace, $this->S, $limit)
+      : preg_replace ($pattern, $replace, $this->S, $limit);
     return $this;
   }
 
   function search ($pattern)
   {
     self::toUnicodeRegex ($pattern);
-    if (!preg_match ($pattern, $this->str, $m, PREG_OFFSET_CAPTURE)) return false;
+    if (!preg_match ($pattern, $this->S, $m, PREG_OFFSET_CAPTURE)) return false;
     return $m[0][1];
   }
 
   function slice ($begin, $end = null)
   {
-    if ($end === null) $end = mb_strlen ($this->str);
-    $this->str = mb_substr ($this->str, $begin, $end < 0 ? $end : $end - $begin);
+    if ($end === null) $end = mb_strlen ($this->S);
+    $this->S = mb_substr ($this->S, $begin, $end < 0 ? $end : $end - $begin);
     return $this;
   }
 
   function split ($pattern, $limit)
   {
     self::toUnicodeRegex ($pattern);
-    return preg_split ($pattern, $this->str, $limit);
+    return preg_split ($pattern, $this->S, $limit);
   }
 
   function startsWith ($search, $pos = 0)
   {
-    return mb_substr ($this->str, $pos, strlen ($search)) === $search;
+    return mb_substr ($this->S, $pos, strlen ($search)) === $search;
   }
 
   function substr ($start, $length = null)
   {
-    $this->str = func_num_args () == 1
-      ? mb_substr ($this->str, $start)
-      : mb_substr ($this->str, $start, $length);
+    $this->S = func_num_args () == 1
+      ? mb_substr ($this->S, $start)
+      : mb_substr ($this->S, $start, $length);
     return $this;
   }
 
   function substring ($indexA, $indexB = null)
   {
-    $l = mb_strlen ($this->str);
+    $l = mb_strlen ($this->S);
     if (func_num_args () == 1) $indexB = $l;
     if ($indexA > $indexB) swap ($indexA, $indexB);
     if ($indexA < 0) $indexA = 0;
     if ($indexB < 0) $indexB = 0;
     if ($indexA > $l) $indexA = $l;
     if ($indexB > $l) $indexB = $l;
-    $this->str = mb_substr ($this->str, $indexA, $indexB - $indexA);
+    $this->S = mb_substr ($this->S, $indexA, $indexB - $indexA);
     return $this;
   }
 
   function toLowerCase ()
   {
-    $this->str = mb_strtolower ($this->str);
+    $this->S = mb_strtolower ($this->S);
     return $this;
   }
 
   function toUpperCase ()
   {
-    $this->str = mb_strtoupper ($this->str);
+    $this->S = mb_strtoupper ($this->S);
     return $this;
   }
 
   function trim ()
   {
-    $this->str = preg_replace ('/^\s+|\s+$/u', '', $this->str);
+    $this->S = preg_replace ('/^\s+|\s+$/u', '', $this->S);
     return $this;
   }
 
   function trimLeft ()
   {
-    $this->str = preg_replace ('/^\s+/u', '', $this->str);
+    $this->S = preg_replace ('/^\s+/u', '', $this->S);
     return $this;
   }
 
   function trimRight ()
   {
-    $this->str = preg_replace ('/\s+$/u', '', $this->str);
+    $this->S = preg_replace ('/\s+$/u', '', $this->S);
     return $this;
   }
 

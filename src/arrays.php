@@ -6,7 +6,7 @@
  * @return PowerArray
  */
 
-function pa_of (array $a = [])
+function PA (array $a = [])
 {
   return PowerArray::of ($a);
 }
@@ -18,7 +18,7 @@ function pa_of (array $a = [])
  * @param array $a Variable.
  * @return PowerArray
  */
-function pa_on (array & $a)
+function asPA (array & $a)
 {
   return PowerArray::on ($a);
 }
@@ -28,7 +28,7 @@ function pa_on (array & $a)
  * @param array $a Variable.
  * @return PowerArray
  */
-function to_pa (array & $a)
+function toPA (array & $a)
 {
   return PowerArray::cast ($a);
 }

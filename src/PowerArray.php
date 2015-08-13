@@ -1,8 +1,14 @@
 <?php
 
-class PowerArray implements ArrayAccess, Countable, IteratorAggregate
+class PowerArray implements ArrayAccess, Countable, IteratorAggregate, Serializable
 {
-  private $data;
+  /**
+   * The array representation of this instance.
+   *
+   * Treat this as read-only - **do not modify** it directly!
+   * @var string
+   */
+  public $A;
 
   /**
    * Creates an uninitialized instance of `PowerArray` that should not be used until the `data` property is set.
@@ -20,8 +26,8 @@ class PowerArray implements ArrayAccess, Countable, IteratorAggregate
    */
   static function cast (array & $src)
   {
-    $x       = new static;
-    $x->data = $src;
+    $x    = new static;
+    $x->A = $src;
     $src &= $x;
     return $x;
   }
@@ -33,7 +39,9 @@ class PowerArray implements ArrayAccess, Countable, IteratorAggregate
    */
   static function of (array $src = [])
   {
-    return new static ($src);
+    $x = new static;
+    $x->A = $src;
+    return $x;
   }
 
   /**
@@ -48,7 +56,7 @@ class PowerArray implements ArrayAccess, Countable, IteratorAggregate
   {
     static $x;
     if (!isset($x)) $x = new static;
-    $x->data =& $src;
+    $x->A =& $src;
     return $x;
   }
 
@@ -65,7 +73,7 @@ class PowerArray implements ArrayAccess, Countable, IteratorAggregate
    */
   function __get ($key)
   {
-    return isset ($this->data[$key]) ? $this->data[$key] : null;
+    return isset ($this->A[$key]) ? $this->A[$key] : null;
   }
 
   /**
@@ -76,7 +84,7 @@ class PowerArray implements ArrayAccess, Countable, IteratorAggregate
    */
   function __set ($key, $value)
   {
-    $this->data[$key] = $value;
+    $this->A[$key] = $value;
   }
 
   /**
@@ -88,7 +96,7 @@ class PowerArray implements ArrayAccess, Countable, IteratorAggregate
    */
   function __isset ($key)
   {
-    return isset ($this->data[$key]);
+    return isset ($this->A[$key]);
   }
 
   /**
@@ -99,7 +107,7 @@ class PowerArray implements ArrayAccess, Countable, IteratorAggregate
    */
   function __toString ()
   {
-    return var_export ($this->data, true);
+    return var_export ($this->A, true);
   }
 
   /**
@@ -109,17 +117,17 @@ class PowerArray implements ArrayAccess, Countable, IteratorAggregate
    */
   function __unset ($key)
   {
-    unset ($this->data[$key]);
+    unset ($this->A[$key]);
   }
 
   function all ()
   {
-    return $this->data;
+    return $this->A;
   }
 
   function append ()
   {
-    call_user_func_array ('array_push', array_merge ($this->data, func_get_args ()));
+    call_user_func_array ('array_push', array_merge ($this->A, func_get_args ()));
     return $this;
   }
 
@@ -134,12 +142,12 @@ class PowerArray implements ArrayAccess, Countable, IteratorAggregate
    */
   function binarySearch ($what, &$probe, $comparator)
   {
-    return array_binarySearch ($this->data, $what, $probe, $comparator);
+    return array_binarySearch ($this->A, $what, $probe, $comparator);
   }
 
   public function count ()
   {
-    return count ($this->data);
+    return count ($this->A);
   }
 
   /**
@@ -153,7 +161,7 @@ class PowerArray implements ArrayAccess, Countable, IteratorAggregate
    */
   function extract (array $keys)
   {
-    $this->data = array_extract ($this->data, $keys);
+    $this->A = array_extract ($this->A, $keys);
     return $this;
   }
 
@@ -167,7 +175,7 @@ class PowerArray implements ArrayAccess, Countable, IteratorAggregate
    */
   function fields (array $keys, $def = null)
   {
-    $this->data = array_fields ($this->data, $keys, $def);
+    $this->A = array_fields ($this->A, $keys, $def);
     return $this;
   }
 
@@ -182,7 +190,7 @@ class PowerArray implements ArrayAccess, Countable, IteratorAggregate
    */
   function filter (callable $fn)
   {
-    $this->data = array_filter ($this->data, $fn);
+    $this->A = array_filter ($this->A, $fn);
     return $this;
   }
 
@@ -201,7 +209,7 @@ class PowerArray implements ArrayAccess, Countable, IteratorAggregate
    */
   function find ($fld, $val, $strict = false)
   {
-    $this->data = array_find ($fld, $val, $strict);
+    $this->A = array_find ($fld, $val, $strict);
     return $this;
   }
 
@@ -217,13 +225,13 @@ class PowerArray implements ArrayAccess, Countable, IteratorAggregate
    */
   function findAll ($fld, $val, $strict = false)
   {
-    $this->data = array_findAll ($this->data, $fld, $val, $strict);
+    $this->A = array_findAll ($this->A, $fld, $val, $strict);
     return $this;
   }
 
   function first ()
   {
-    return $this->data[0];
+    return $this->A[0];
   }
 
   /**
@@ -239,7 +247,7 @@ class PowerArray implements ArrayAccess, Countable, IteratorAggregate
    */
   function getColumn ($key)
   {
-    $this->data = array_getColumn ($this->data, $key);
+    $this->A = array_getColumn ($this->A, $key);
     return $this;
   }
 
@@ -256,13 +264,13 @@ class PowerArray implements ArrayAccess, Countable, IteratorAggregate
    */
   function getColumns (array $keys)
   {
-    $this->data = array_getColumns ($this->data, $keys);
+    $this->A = array_getColumns ($this->A, $keys);
     return $this;
   }
 
   public function getIterator ()
   {
-    return $this->data;
+    return $this->A;
   }
 
   /**
@@ -355,7 +363,7 @@ class PowerArray implements ArrayAccess, Countable, IteratorAggregate
    */
   function group ()
   {
-    $this->data = call_user_func_array ('array_group', array_merge ([$this->data], func_get_args ()));
+    $this->A = call_user_func_array ('array_group', array_merge ([$this->A], func_get_args ()));
     return $this;
   }
 
@@ -368,7 +376,7 @@ class PowerArray implements ArrayAccess, Countable, IteratorAggregate
    */
   function hidrate ($className)
   {
-    $this->data = array_hidrate ($this->data, $className);
+    $this->A = array_hidrate ($this->A, $className);
     return $this;
   }
 
@@ -381,7 +389,7 @@ class PowerArray implements ArrayAccess, Countable, IteratorAggregate
    */
   function indexBy ($field)
   {
-    $this->data = array_indexBy ($this->data, $field);
+    $this->A = array_indexBy ($this->A, $field);
     return $this;
   }
 
@@ -397,7 +405,7 @@ class PowerArray implements ArrayAccess, Countable, IteratorAggregate
    */
   function indexOf ($value, $strict = true)
   {
-    return array_search ($value, $this->data, $strict);
+    return array_search ($value, $this->A, $strict);
   }
 
   /**
@@ -411,7 +419,7 @@ class PowerArray implements ArrayAccess, Countable, IteratorAggregate
    */
   function iterateColumns (array $cols, callable $fn)
   {
-    array_iterateColumns ($this->data, $cols, $fn);
+    array_iterateColumns ($this->A, $cols, $fn);
     return $this;
   }
 
@@ -427,7 +435,7 @@ class PowerArray implements ArrayAccess, Countable, IteratorAggregate
   function join ($array, $field)
   {
     // NOT IMPLEMENTED!!! DUMMY CODE!
-    $this->data = array_join ($this->data, $array instanceof self ? $array->data : $array, $field);
+    $this->A = array_join ($this->A, $array instanceof self ? $array->A : $array, $field);
     return $this;
   }
 
@@ -437,7 +445,7 @@ class PowerArray implements ArrayAccess, Countable, IteratorAggregate
    */
   function keys ()
   {
-    $this->data = array_keys ($this->data);
+    $this->A = array_keys ($this->A);
     return $this;
   }
 
@@ -449,13 +457,13 @@ class PowerArray implements ArrayAccess, Countable, IteratorAggregate
    */
   function keysOf ($value, $strict = true)
   {
-    $this->data = array_keys ($this->data, $value, $strict);
+    $this->A = array_keys ($this->A, $value, $strict);
     return $this;
   }
 
   function last ()
   {
-    return array_slice ($this->data, -1);
+    return array_slice ($this->A, -1);
   }
 
   /**
@@ -472,7 +480,7 @@ class PowerArray implements ArrayAccess, Countable, IteratorAggregate
    */
   function map (callable $fn)
   {
-    $this->data = map ($this->data, $fn);
+    $this->A = map ($this->A, $fn);
     return $this;
   }
 
@@ -489,7 +497,7 @@ class PowerArray implements ArrayAccess, Countable, IteratorAggregate
    */
   function mapColumns (array $cols, callable $fn)
   {
-    $this->data = array_mapColumns ($this->data, $cols, $fn);
+    $this->A = array_mapColumns ($this->A, $cols, $fn);
     return $this;
   }
 
@@ -499,9 +507,9 @@ class PowerArray implements ArrayAccess, Countable, IteratorAggregate
    */
   function merge ($v)
   {
-    if (is_array ($v)) array_concat ($this->data, $v);
+    if (is_array ($v)) array_concat ($this->A, $v);
     else if ($v instanceof static)
-      array_concat ($this->data, $v->data);
+      array_concat ($this->A, $v->A);
     else throw new InvalidArgumentException;
   }
 
@@ -516,27 +524,27 @@ class PowerArray implements ArrayAccess, Countable, IteratorAggregate
    */
   function missing ($key)
   {
-    return missing ($this->data, $key);
+    return missing ($this->A, $key);
   }
 
   public function offsetExists ($offset)
   {
-    return isset ($this->data[$offset]);
+    return isset ($this->A[$offset]);
   }
 
   public function offsetGet ($offset)
   {
-    return isset ($this->data[$offset]) ? $this->data[$offset] : null;
+    return isset ($this->A[$offset]) ? $this->A[$offset] : null;
   }
 
   public function offsetSet ($offset, $value)
   {
-    $this->data[$offset] = $value;
+    $this->A[$offset] = $value;
   }
 
   public function offsetUnset ($offset)
   {
-    unset ($this->data[$offset]);
+    unset ($this->A[$offset]);
   }
 
   /**
@@ -547,18 +555,18 @@ class PowerArray implements ArrayAccess, Countable, IteratorAggregate
    */
   function orderBy ()
   {
-    $this->data = call_user_func_array ('array_orderBy', array_merge ([$this->data], func_get_args ()));
+    $this->A = call_user_func_array ('array_orderBy', array_merge ([$this->A], func_get_args ()));
     return $this;
   }
 
   function pop ()
   {
-    return array_pop ($this->data);
+    return array_pop ($this->A);
   }
 
   function prepend ()
   {
-    call_user_func_array ('array_unshift', array_merge ($this->data, func_get_args ()));
+    call_user_func_array ('array_unshift', array_merge ($this->A, func_get_args ()));
     return $this;
   }
 
@@ -568,7 +576,7 @@ class PowerArray implements ArrayAccess, Countable, IteratorAggregate
    */
   function prune ()
   {
-    $this->data = array_prune ($this->data);
+    $this->A = array_prune ($this->A);
     return $this;
   }
 
@@ -581,12 +589,35 @@ class PowerArray implements ArrayAccess, Countable, IteratorAggregate
    */
   function reduce (callable $fn, $initial = null)
   {
-    return array_reduce ($this->data, $fn, $initial);
+    return array_reduce ($this->A, $fn, $initial);
+  }
+
+  /**
+   * Reindexes the current data into a series of sequential integer keys.
+   *
+   * This is useful to extract the data as a linear array with no discontinuous keys.
+   *
+   * @return $this Self, for chaining.
+   */
+  function reindex ()
+  {
+    $this->A = array_values ($this->A);
+    return $this;
+  }
+
+  public function serialize ()
+  {
+    return serialize ($this->A);
+  }
+
+  public function unserialize ($serialized)
+  {
+    $this->A = unserialize ($serialized);
   }
 
   function shift ()
   {
-    return array_shift ($this->data);
+    return array_shift ($this->A);
   }
 
   /**
@@ -603,7 +634,7 @@ class PowerArray implements ArrayAccess, Countable, IteratorAggregate
    */
   function slice ($start, $len, $preserveKeys = false)
   {
-    return array_slice ($this->data, $start, $len, $preserveKeys);
+    return array_slice ($this->A, $start, $len, $preserveKeys);
   }
 
   /**
@@ -627,7 +658,7 @@ class PowerArray implements ArrayAccess, Countable, IteratorAggregate
    */
   function splice ($offset, $length = null, array $replacement = null)
   {
-    array_splice ($this->data, $offset, $length, $replacement);
+    array_splice ($this->A, $offset, $length, $replacement);
     return $this;
   }
 
@@ -640,20 +671,6 @@ class PowerArray implements ArrayAccess, Countable, IteratorAggregate
    */
   function toClass ($className)
   {
-    return array_toClass ($this->data, $className);
+    return array_toClass ($this->A, $className);
   }
-
-  /**
-   * Reindexes the current data into a series of sequential integer keys.
-   *
-   * This is useful to extract the data as a linear array with no discontinuous keys.
-   *
-   * @return $this Self, for chaining.
-   */
-  function reindex ()
-  {
-    $this->data = array_values ($this->data);
-    return $this;
-  }
-
 }

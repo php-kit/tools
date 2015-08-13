@@ -5,7 +5,7 @@
  * @param string $str
  * @return PowerString
  */
-function ps_of ($str = '')
+function PS ($str = '')
 {
   return PowerString::of ($str);
 }
@@ -17,7 +17,7 @@ function ps_of ($str = '')
  * @param string $str Variable.
  * @return PowerString
  */
-function ps_on (& $str)
+function asPS (& $str)
 {
   return PowerString::on ($str);
 }
@@ -27,7 +27,7 @@ function ps_on (& $str)
  * @param string $str Variable.
  * @return PowerString
  */
-function to_ps (& $str)
+function toPS (& $str)
 {
   return PowerString::cast ($str);
 }
@@ -142,11 +142,25 @@ function str_encodeJavasciptStr ($str, $delim = '"')
  *
  * Ex: `my-long-name => myLongName`
  * @param string $name
+ * @param bool   $ucfirst When `true` the first letter is capitalized, otherwhise it is lower cased.
  * @return string
  */
-function dehyphenate ($name)
+function dehyphenate ($name, $ucfirst = false)
 {
-  return str_replace (' ', '', ucwords (str_replace ('-', ' ', $name)));
+  $s = str_replace (' ', '', ucwords (str_replace ('-', ' ', $name)));
+  return $ucfirst ? $s : lcfirst ($s);
+}
+
+/**
+ * Converts a string to camel cased form.
+ * @param string $name
+ * @param bool   $ucfirst When `true` the first letter is capitalized, otherwhise it is lower cased.
+ * @return string
+ */
+function str_camelize ($name, $ucfirst = false)
+{
+  $s = str_replace (' ', '', ucwords ($name));
+  return $ucfirst ? $s : lcfirst ($s);
 }
 
 function trimText ($text, $maxSize)
