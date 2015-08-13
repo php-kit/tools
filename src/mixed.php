@@ -88,12 +88,12 @@ function setAt (&$target, $path, $v, $assoc = false)
   $cur = $v;
 }
 
-function unsetAt ($path)
+function unsetAt ($target, $path)
 {
   $paths = explode ('.', $path);
   $key   = array_pop ($paths);
   $path  = implode ('.', $paths);
-  $v     =& $this->getRefAt ($path);
+  $v     =& getRefAt ($target, $path);
   if (is_array ($v))
     unset ($v[$key]);
   else if (is_object ($v))

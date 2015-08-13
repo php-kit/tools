@@ -1,6 +1,18 @@
 <?php
 
 /**
+ * Retrieves an environmental variable.
+ * @param string $var
+ * @param string $default
+ * @return string
+ */
+function env ($var, $default = '')
+{
+  $v = getenv ($var);
+  return $v == '' || $v[0] == '%' ? $default : $v;
+}
+
+/**
  * Runs the specified external command with the specified input data and returns the resulting output.
  *
  * @param string $cmd       Command line to be executed by the shell.
