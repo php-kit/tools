@@ -1,5 +1,6 @@
 <?php
 
+global $_;
 /**
  * Use this function to evaluate any expression in a string interpolator.
  *
@@ -10,7 +11,6 @@
  * @param mixed $v
  * @return mixed
  */
-global $_;
 $_ = function ($v) { return $v; };
 
 /**

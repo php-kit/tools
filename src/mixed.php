@@ -69,7 +69,7 @@ function getAt ($target, $path)
   return $cur;
 }
 
-function & getRefAt ($target, $path)
+function & getRefAt (& $target, $path)
 {
   $segs = explode ('.', $path);
   $cur  = $target;
@@ -79,7 +79,7 @@ function & getRefAt ($target, $path)
   return $cur;
 }
 
-function setAt (&$target, $path, $v, $assoc = false)
+function setAt (& $target, $path, $v, $assoc = false)
 {
   $segs = explode ('.', $path);
   $cur  =& $target;
@@ -88,7 +88,7 @@ function setAt (&$target, $path, $v, $assoc = false)
   $cur = $v;
 }
 
-function unsetAt ($target, $path)
+function unsetAt (& $target, $path)
 {
   $paths = explode ('.', $path);
   $key   = array_pop ($paths);
