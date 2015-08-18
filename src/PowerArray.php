@@ -181,8 +181,8 @@ class PowerArray implements ArrayAccess, Countable, IteratorAggregate, Serializa
 
   /**
    * Calls a filtering function for each element of an array.
-   * The function will receive as arguments the array element and its index.
-   * It should return boolean value that indicates if the element should not be discarded.
+   * The function will receive as arguments the array element and its key.
+   * It should return a boolean value that indicates whether the element should not be discarded or not.
    *
    * @param callable $fn
    *
@@ -190,7 +190,7 @@ class PowerArray implements ArrayAccess, Countable, IteratorAggregate, Serializa
    */
   function filter (callable $fn)
   {
-    $this->A = array_filter ($this->A, $fn);
+    $this->A = array_filter ($this->A, $fn, ARRAY_FILTER_USE_BOTH);
     return $this;
   }
 
