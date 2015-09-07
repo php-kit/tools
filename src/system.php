@@ -188,4 +188,13 @@ function tempdir ($dir, $prefix = '', $mode = 0700)
   return $path;
 }
 
-
+/**
+ * Returns an ancestor directory of the given directory, `n` levels above.
+ * @param string $path The starting path.
+ * @param int $times How many times to travel up the directory hierarchy.
+ * @return string The resulting path.
+ */
+function updir ($path, $times = 1) {
+  while ($times--) $path = dirname ($path);
+  return $path;
+}
