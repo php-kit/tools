@@ -1,12 +1,12 @@
 {
-  "name": "impactwave/php-kit",
+  "name": "php-kit/tools",
   "license": "MIT",
   "description": "A toolkit of utility functions for general use",
   "keywords": [
     "helpers",
     "utility"
   ],
-  "homepage": "https://github.com/impactwave/php-kit",
+  "homepage": "https://github.com/php-kit/tools",
   "authors": [
     {
       "name": "Impactwave",

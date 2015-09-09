@@ -1,4 +1,4 @@
-# PHP-Kit
+# PHP-Kit Tools
 ##### A toolkit of utility functions for general use
 
 #### Runtime requirements
@@ -7,8 +7,9 @@
 
 ## Introduction
 
-This toolkit assists the developer writing any kind of PHP code. It provides missing functionality from the standard library and adds miscellaneous generic, low-level, foundational functions for making your code clearer and more succinct, reducing boilerplate and copy-paste.
-
+This toolkit assists the developer writing any kind of PHP code.
+It provides missing functionality from the standard library and adds miscellaneous generic, low-level, 
+foundational functions for making your code clearer and more succinct, reducing boilerplate and copy-paste.
 
 ## License
 
