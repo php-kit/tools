@@ -78,6 +78,44 @@ composer require php-kit/tools
 
 - PHP >= 5.4
 
+#### Code organization
+
+On the project's `src` folder you'll find a separate file for each group of functions, grouped by theme / purpose / scope.
+
+All functions are global, i.e. they have no namespace and they are always accessible anywhere on your application.
+
+Most functions on this library have names that make them seem just like another predefined PHP function, thereby complementing the standard API with the missing functions we wished were there.
+
+For instance, array functions have the `array_` prefix, string functions have the `str_` prefix, and so on.
+
+## FAQ
+
+#### Why are all functions global?
+
+As these are helper / utility / general purpose functions, they can (and will) be used anywhere on the host application, and very frequently.
+
+The library is compatible with PHP 5.4, which means there is no easy way to import the functions into a file's namespace, and there is no autoloading capability (it only works for classes). 
+
+Either we transform these functions into class static methods, which will make calling then more verbose (and destroy the illusion of them being just an extension to the standard PHP global functions), or we raise the PHP version requirement to 5.6.
+
+Even when using PHP >= 5.6, always having to import each and every single function using `use` statements at the top of each source code file, is not the most practical / productive solution. 
+
+#### Aren't globals bad?
+
+If you don't want to use global functions, then this library is not for you. There are other alternatives that will meet your expectations.
+
+Having said that, yes, globals have some problems.
+
+The main disadvantage of using globals is that they *pollute* the global namespace and increase the probability of identifier collisions with functions from other libraries.
+
+Nevertheless, PHP is known for having no shame in polluting the global namespace with thousands of functions, classes, variables and constants. So, we just keep the tradition, and extend it a little more. ;-)
+
+Do note that many of our functions are named with a common prefix. For instance, array functions have the `array_` prefix, string functions have the `str_` prefix, and so on. This also reduces the probability of name collisions.
+
+Also, some functions are wrapped in `if` blocks so that, if a function with the same name is already defined, no error will occur and the original function will be kept unmodified. Of course, in that case, you'll not be able to use the new function with the same name, but at least it will not prevent you from using other functions from this library.  
+
+> This conditional definition is, currently, reserved to functions with very common names, though (ex. `get`).
+
 ## License
 
 This library is open-source software licensed under the [MIT license](http://opensource.org/licenses/MIT).
