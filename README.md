@@ -1,25 +1,26 @@
 # PHP-Kit Tools
 ##### A toolkit of utility functions for general use
 
-## What is PHP-Kit?
+## What is PHP-Kit Tools?
 
-This toolkit assists the developer in writing any kind of PHP code.  
-It provides missing functionality from the standard library and adds miscellaneous generic, low-level, 
+PHP-Kit Tools is an attempt to create a toolkit of general purpose helper / utility functions that can be reused between projects.
+
+This toolkit provides missing functionality from the standard library and adds miscellaneous generic, low-level, 
 foundational functions for making your code clearer and more succinct, reducing boilerplate and copy-paste.
 
-## Why PHP-Kit?
+## Why PHP-Kit Tools?
 
 There are some recurring functions and patterns that are needed frequently when developing any PHP project.
-So, developers frequently copy-paste the same own-made utility/helper functions over and over, from project to project.
+So, developers frequently copy-paste the same own-made utility / helper functions over and over, from project to project.
   
 ### The problem
 
 * all that copy-pasted code is hard to organize, update and maintain, especially when being shared between projects;
-* different developers (even in the same team and/or in the same project) create their own utility/helper functions, sometimes redundantly duplicating existing code, introducing subtle variations and/or generating confiusion between team mates;
+* different developers (even in the same team and/or in the same project) create their own utility / helper functions, sometimes redundantly duplicating existing code, introducing subtle variations and/or generating confiusion between team mates;
 * copy-pasted-modified code is usually badly documented, possibly bug-ridden and, being developer-specific, has no support (from other than the original developer);
 * if you use the utility functions provided by a specific framework, you're limiting the reusability of your code and making it harder for you to switch to projects made with other frameworks.
 
-### PHP-Kit is the solution
+### PHP-Kit Tools is a solution
 
 ##### Usable on any PHP project
 
@@ -32,7 +33,7 @@ Work with any framework, always using the same set of base functions.
 Make your code easier to reuse.  
 Make it easier to switch to projects made with other frameworks, keeping the *way-you-work*.  
 
-> Some frameworks even use PHP-Kit on their own code!
+> Some frameworks even use PHP-Kit Tools on their own code.
 
 ##### Documented
 
@@ -102,9 +103,7 @@ Even when using PHP >= 5.6, always having to import each and every single functi
 
 #### Aren't globals bad?
 
-If you don't want to use global functions, then this library is not for you. There are other alternatives that will meet your expectations.
-
-Having said that, yes, globals have some problems.
+Yes, globals have some problems.
 
 The main disadvantage of using globals is that they *pollute* the global namespace and increase the probability of identifier collisions with functions from other libraries.
 
