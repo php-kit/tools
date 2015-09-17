@@ -1,39 +1,6 @@
 <?php
 
 /**
- * Creates a new instance of `PowerArray` from the given array.
- * @param array $a
- * @return PowerArray
- */
-
-function PA (array $a = [])
-{
-  return PowerArray::of ($a);
-}
-
-/**
- * Reuses the same singleton instance of `PowerArray` to wrap the given array.
- *
- * This has increased performance, but it should be used with care.
- * @param array $a Variable.
- * @return PowerArray
- */
-function asPA (array & $a)
-{
-  return PowerArray::on ($a);
-}
-
-/**
- * Converts an array variable to an instance of `PowerArray`.
- * @param array $a Variable.
- * @return PowerArray
- */
-function toPA (array & $a)
-{
-  return PowerArray::cast ($a);
-}
-
-/**
  * Searches for an element on a **sorted** array.
  *
  * @param array    $array      Where to search.

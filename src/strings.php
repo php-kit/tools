@@ -1,38 +1,6 @@
 <?php
 
 /**
- * Creates a new instance of `PowerString` from the given string.
- * @param string $str
- * @return PowerString
- */
-function PS ($str = '')
-{
-  return PowerString::of ($str);
-}
-
-/**
- * Reuses the same singleton instance of `PowerString` to wrap the given string.
- *
- * This has increased performance, but it should be used with care.
- * @param string $str Variable.
- * @return PowerString
- */
-function asPS (& $str)
-{
-  return PowerString::on ($str);
-}
-
-/**
- * Converts a string variable to an instance of `PowerString`.
- * @param string $str Variable.
- * @return PowerString
- */
-function toPS (& $str)
-{
-  return PowerString::cast ($str);
-}
-
-/**
  * Truncates a string to a certain length and appends ellipsis to it.
  *
  * @param string $text
