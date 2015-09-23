@@ -21,7 +21,15 @@ function boolToStr ($val)
  */
 function strToBool ($val)
 {
-  return $val == 'true' || $val == '1' || $val == 'yes' || $val == 'on';
+  if ($val instanceof Iterator)
+    return $val->valid ();
+  if ($val instanceof IteratorAggregate) {
+    $it = $val->getIterator ();
+    /** @var Iterator $it */
+    $it->rewind ();
+    return $it->valid ();
+  }
+  return is_string ($val) ? $val == 'true' || $val == '1' || $val == 'yes' || $val == 'on' : boolval ($val);
 }
 
 /**
@@ -47,7 +55,7 @@ function toFloat ($val)
 {
   if (is_null ($val) || $val === '')
     return null;
-  $val = str_replace (' ', '',str_replace (',', '.', $val));
+  $val = str_replace (' ', '', str_replace (',', '.', $val));
   return floatval ($val);
 }
 
