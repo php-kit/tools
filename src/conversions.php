@@ -13,13 +13,16 @@ function boolToStr ($val)
 }
 
 /**
- * Converts a number or a textual description of a boolean value into a true boolean.
+ * Enhanced version of boolval().
+ * <p>Converts a truthy value or a textual description of a boolean value into a true boolean.
+ * <p>It also supports evaluating Traversables.
  *
- * @param string|int $val 'true', 'yes', 'on' and '1' evaluate to true. All other values evaluate to false.
+ * @param mixed $val 'true', 'yes', 'on', '1', non empty traversables and any truthy value evaluate to `true`.
+ *                   All other values evaluate to `false`.
  *
  * @return bool
  */
-function strToBool ($val)
+function toBool ($val)
 {
   if ($val instanceof Iterator)
     return $val->valid ();
