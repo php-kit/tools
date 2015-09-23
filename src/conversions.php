@@ -32,7 +32,7 @@ function toBool ($val)
     $it->rewind ();
     return $it->valid ();
   }
-  return is_string ($val) ? $val == 'true' || $val == '1' || $val == 'yes' || $val == 'on' : boolval ($val);
+  return is_string ($val) ? $val == 'true' || $val == '1' || $val == 'yes' || $val == 'on' : (bool)$val;
 }
 
 /**
