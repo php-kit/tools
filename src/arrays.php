@@ -448,7 +448,7 @@ function array_toClass (array $array, $className)
  *
  * @return mixed
  */
-function get (array $array, $key, $def = null)
+function get (array $array = null, $key, $def = null)
 {
   return isset ($array[$key]) ? $array[$key] : $def;
 }
