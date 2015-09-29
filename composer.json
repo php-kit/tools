@@ -30,7 +30,8 @@
       "src/runtime.php",
       "src/strings.php",
       "src/system.php",
-      "src/php-code.php"
+      "src/php-code.php",
+      "src/io.php"
     ]
   }
 }
