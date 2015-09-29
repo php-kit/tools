@@ -1,6 +1,17 @@
 <?php
 
 /**
+ * Checks if a string begins with a given substring.
+ * @param string $str
+ * @param string $substr
+ * @return bool
+ */
+function str_begins_with ($str, $substr)
+{
+  return substr ($str, 0, strlen ($substr)) == $substr;
+}
+
+/**
  * Truncates a string to a certain length and appends ellipsis to it.
  *
  * @param string $text
