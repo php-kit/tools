@@ -103,8 +103,13 @@ function mb_str_pad ($str, $pad_len, $pad_str = ' ', $dir = STR_PAD_RIGHT, $enco
 }
 
 /**
- * Encodes a string to be outputted to a javascript block as a delimited string.
+ * Encodes a string to be outputted as a delimited string to a javascript block, in an HTML page.
  * Newlines and quotes that match the delimiters are escaped.
+ *
+ * > Ex. outputting an arbitrary string to an alert javascfript call:
+ * ```
+ * echo '<div onclick="alert(' . str_encodeJavasciptStr($text, "'") . ')">click me</div>';
+ * ```
  *
  * @param string $str   The string to be encoded.
  * @param string $delim The delimiter used to enclose the javascript string (either " or ').
@@ -113,7 +118,7 @@ function mb_str_pad ($str, $pad_len, $pad_str = ' ', $dir = STR_PAD_RIGHT, $enco
  */
 function str_encodeJavasciptStr ($str, $delim = '"')
 {
-  return $delim . str_replace ($delim, '\\' . $delim, str_replace ("\n", '\\n', $str)) . $delim;
+  return $delim . htmlspecialchars (str_replace ($delim, '\\' . $delim, str_replace ("\n", '\\n', $str))) . $delim;
 }
 
 /**
