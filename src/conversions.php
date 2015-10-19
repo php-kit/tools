@@ -62,3 +62,19 @@ function toFloat ($val)
   return floatval ($val);
 }
 
+function friendlySize ($size, $precision = 0) {
+  $units = ['bytes', 'Kb', 'Mb', 'Gb', 'Tb'];
+  $p = 0;
+  $s = $size;
+  $sc = 1;
+  $sc2 = 1;
+  while (strlen($s) >3) {
+    ++$p;
+    $sc *= 1024;
+    $sc2 *= 1000;
+    $s = floor ($s / 1024);
+  }
+  $d = round (($size - $sc * $s) / $sc2, $precision);
+  $s += $d;
+  return "$s $units[$p]";
+}
