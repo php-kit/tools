@@ -69,7 +69,7 @@ function array_fields (array $a, array $keys, $def = null)
 {
   $o = [];
   foreach ($keys as $k)
-    $o[] = isset($a[$k]) ? $a[$k] : $def;
+    $o[] = array_key_exists ($k, $a) ? $a[$k] : $def;
   return $o;
 }
 
