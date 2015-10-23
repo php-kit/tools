@@ -128,3 +128,13 @@ function object_fields ($o, array $keys, $def = null)
   return $o;
 }
 
+/**
+ * Checks if a class (or class instance) uses a specific trait.
+ * @param string|object $class
+ * @param string        $trait Fully qualified trait name.
+ * @return bool
+ */
+function uses_trait ($class, $trait)
+{
+  return isset(class_uses ($class)[$trait]);
+}
