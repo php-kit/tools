@@ -55,6 +55,35 @@ class PhpCode
   }
 
   /**
+   * Creates an anonymous function (Closure) that evaluates the given expression.
+   * @param string $_exp  A valid PHP expression. It must not be a statement.
+   * @param string $_vars If specified, it's a comma-delimited list of variable names that can be referenced on the
+   *                      expression. Names must be prefixed with `$`. Any identifier on the expression that is not on
+   *                      this list must be a global variable, constant, class or function.
+   * @return Closure The computed result.
+   */
+  static function compile ($_exp, $_vars = '')
+  {
+    _log($_exp, "return function($_vars){return $_exp;};");
+    return eval("return function($_vars){return $_exp;};");
+  }
+
+  /**
+   * Evaluates the given expression.
+   * > **Note:** Variables on the local scope where this method is invoked will not be accessible. Use the `$vars`
+   * parameter instead.
+   * @param string $_exp  A valid PHP expression. It must not be a statement.
+   * @param array  $_vars If specified, it's a map of variable names and their values that can be referenced on the
+   *                      expression. Names must not be prefixed with `$`.
+   * @return mixed The computed result.
+   */
+  static function evaluate ($_exp, array $_vars = [])
+  {
+    extract ($_vars, EXTR_SKIP);
+    return eval("return $_exp;");
+  }
+
+  /**
    * Loads and runs a PHP file, searching for it on the include path, stripping the BOM (if one is present) and throwing
    * catchable exceptions instead of fatal errors.
    * @param string $filename
@@ -86,7 +115,7 @@ class PhpCode
   /**
    * Checks if the given PHP source code is syntactically valid.
    * @param string $code
-   * @param int    $output If specified, captures the error moessage.
+   * @param int    $output If specified, captures the error message.
    * @return bool `true` if the code is syntatically correct.
    */
   static function validate ($code, &$output = 0)
