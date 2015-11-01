@@ -64,7 +64,6 @@ class PhpCode
    */
   static function compile ($_exp, $_vars = '')
   {
-    _log($_exp, "return function($_vars){return $_exp;};");
     return eval("return function($_vars){return $_exp;};");
   }
 
