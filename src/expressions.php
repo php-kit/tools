@@ -41,15 +41,16 @@ function e ($o)
       case 'array':
         $at = [];
         $s  = ' ';
-        foreach ($o as $k => $v)
+        foreach ($o as $k => $v) {
+          if (!is_string ($v) && !is_numeric ($v))
+            throw new \InvalidArgumentException ("Can't output an array with values of type " . gettype ($v));
           if (is_numeric ($k))
             $at[] = $v;
-          else if (is_string ($v)) {
+          else {
             $at[] = "$k:$v";
             $s    = ';';
           }
-          else
-            $at[] = $k;
+        }
         $o = implode ($s, $at);
         break;
       case 'NULL':
