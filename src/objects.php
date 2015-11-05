@@ -36,42 +36,6 @@ function object_toClass ($instance, $className)
 }
 
 /**
- * Merges the values provided on the specified array into the given object.
- * Validates each field and discards it if it doesn't exist in the object.
- * <br><br>
- * Amongst other uses, this is useful for merging values provided by POST or PUT request into a model object.
- * <br><br>
- * Note: empty values are converted to NULL.
- *
- * Note: boolean values 'true' and 'false' are automatically typecast to boolean.
- * All other field types are not typecast.
- *
- * @param mixed $obj A model instance.
- * @param array $src The source data to be merged.
- *
- * @return mixed The input object.
- */
-function object_mergeArray ($obj, array $src)
-{
-  foreach ($src as $k => $v)
-    if (property_exists ($obj, $k)) {
-      switch ($v) {
-        case '':
-          $v = null;
-          break;
-        case 'true':
-          $v = true;
-          break;
-        case 'false':
-          $v = false;
-          break;
-      }
-      $obj->$k = $v;
-    }
-  return $obj;
-}
-
-/**
  * Copies properties from a source object (or array) into a given object.
  *
  * @param object       $target
@@ -94,17 +58,17 @@ function extend ($target, $src)
  * Copies non-empty properties from a source object (or array) into a given object.
  * Note: empty properties are those containing null or an empty string.
  *
- * @param object       $target
- * @param object|array $src
+ * @param object                   $target
+ * @param object|array|Traversable $src
  *
  * @throws Exception
  */
-function extendNonEmpty ($target, $src)
+function extendExisting ($target, $src)
 {
   if (isset($src)) {
     if (is_object ($target)) {
       foreach ($src as $k => $v)
-        if (isset($v) && $v !== '')
+        if (property_exists ($target, $k))
           $target->$k = $v;
     }
     else throw new InvalidArgumentException('Invalid target for ' . __FUNCTION__);

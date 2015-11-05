@@ -33,13 +33,26 @@ function array_binarySearch (array $array, $what, &$probe, $comparator)
 }
 
 /**
- * Concatenates an array to the target array, modifying the original.
+ * Merges an array to the target array, modifying the original.
  * @param array $a
  * @param array $b
  */
-function array_concat (array &$a, array $b)
+function array_mergeInto (array &$a, array $b)
 {
   $a = array_merge ($a, $b);
+}
+
+/**
+ * Merges an array, object or iterable to the target array, modifying the original, but only for keys already existing
+ * on the target.
+ * @param array                    $array
+ * @param array|object|Traversable $data
+ */
+function array_mergeExisting (array &$array, $data)
+{
+  foreach ($data as $k => $v)
+    if (array_key_exists ($k, $array))
+      $array[$k] = $v;
 }
 
 /**
@@ -527,3 +540,32 @@ function missing (array &$array, $key)
 {
   return !array_key_exists ($key, $array) || is_null ($x = $array[$key]) || $x === '';
 }
+
+/**
+ * Removes all values that are either null or ''.
+ *
+ * @param array $array The source array.
+ * @return array The modified array.
+ */
+function array_stripEmptyValues (array $array)
+{
+  foreach ($array as $k => $v)
+    if (!isset($v) || $v === '')
+      unset ($array[$k]);
+  return $array;
+}
+
+/**
+ * Converts all values that are empty strings to `null`.
+ *
+ * @param array $array The source array.
+ * @return array The modified array.
+ */
+function array_normalizeEmptyValues (array $array)
+{
+  foreach ($array as $k => $v)
+    if ($v === '')
+      $array[$k] = null;
+  return $array;
+}
+
