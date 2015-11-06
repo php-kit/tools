@@ -6,9 +6,20 @@
  * @param string $substr
  * @return bool
  */
-function str_begins_with ($str, $substr)
+function str_beginsWith ($str, $substr)
 {
   return substr ($str, 0, strlen ($substr)) == $substr;
+}
+
+/**
+ * Checks if a string ends with a given substring.
+ * @param string $str
+ * @param string $substr
+ * @return bool
+ */
+function str_endsWith ($str, $substr)
+{
+  return substr ($str, -strlen ($substr)) == $substr;
 }
 
 /**
