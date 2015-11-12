@@ -1,35 +1,23 @@
 <?php
 
 /**
- * Transforms a callable reference into a closure, with optional pre-bound and/or post-bound arguments.
+ * Allows an IDE to recognize a callable reference, so that it can validate it and allow one to refactor it.
  *
- * The closure can be used to call the original reference via `$x()` syntax.
+ * It is a no-op: it returns the input argument unmodified.
  *
- * @param callable $fn       A function reference, in the form of:
- *                           <ul>
- *                           <li> a Closure instance,
- *                           <li> a function name string,
- *                           <li> a "class::method" string, or
- *                           <li> an array of (className,methodName).
- *                           <li> an array of (classInstance,methodName).
- *                           </ul>
- * @param array    $append   If specified, these arguments will be appended to the target function's arguments on each
- *                           call.
- *                           <p>Note: `$append` precedes `$prepend` because this is the most common case for callback
- *                           usage.
- * @param array    $prepend  If specified, these arguments will be prepended to the target function's arguments on each
- *                           call.
- * @return Closure
+ * @param callable $f A function reference, in the form of:
+ *                    <ul>
+ *                      <li> a Closure instance,
+ *                      <li> a function name string,
+ *                      <li> a "class::method" string, or
+ *                      <li> an array of (className,methodName).
+ *                      <li> an array of (classInstance,methodName).
+ *                    </ul>
+ * @return callable
  */
-function fn (callable $fn, array $append = [], array $prepend = [])
+function fn (callable $f)
 {
-  if (func_num_args () == 1)
-    return function () use ($fn) {
-      return call_user_func_array ($fn, func_get_args ());
-    };
-  return function () use ($fn, $prepend, $append) {
-    return call_user_func_array ($fn, array_merge ($prepend, func_get_args (), $append));
-  };
+  return $f;
 }
 
 /**
@@ -42,8 +30,8 @@ function fn (callable $fn, array $append = [], array $prepend = [])
  *                           <li> an array of (className,methodName).
  *                           <li> an array of (classInstance,methodName).
  *                           </ul>
- * @param mixed    $self    The value of `$this` inside `$fn` (an object).
- * @param mixed    ...$args Extra arguments to be prepended to `$fn` on each call.
+ * @param mixed    $self     The value of `$this` inside `$fn` (an object).
+ * @param mixed    ...$args  Extra arguments to be prepended to `$fn` on each call.
  * @return Closure
  */
 function bind (callable $fn, $self = null)
@@ -64,8 +52,8 @@ function bind (callable $fn, $self = null)
  *                           <li> an array of (className,methodName).
  *                           <li> an array of (classInstance,methodName).
  *                           </ul>
- * @param mixed    $self    The value of `$this` inside `$fn` (an object).
- * @param mixed    ...$args Extra arguments to be appended to `$fn` on each call.
+ * @param mixed    $self     The value of `$this` inside `$fn` (an object).
+ * @param mixed    ...$args  Extra arguments to be appended to `$fn` on each call.
  * @return Closure
  */
 function bindRight (callable $fn, $self = null)
@@ -158,3 +146,5 @@ function identity ()
 {
   return function ($a) { return $a; };
 }
+
+function fref
