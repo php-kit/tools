@@ -179,3 +179,12 @@ function swap (& $a, & $b) {
   $a = $b;
   $b = $x;
 }
+
+/**
+ * Returns the class name of the argument or, if not an object, a description of its data type.
+ * @param mixed $x
+ * @return string
+ */
+function typeOf ($x) {
+  return get_class($x) ?: gettype ($x);
+}
