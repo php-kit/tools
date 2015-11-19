@@ -193,6 +193,83 @@ function array_getColumn (array $array, $key)
 }
 
 /**
+ * Inserts a value with an optional key after an existing array element with a specific key, shifting other values to
+ * make room.
+ *
+ * <p>This function preserves the current order and keys of the array elements.
+ * <p>String keys are supported.
+ * <p>If no array element with the specified key is found, the new value is appended (with the corresponding key) at
+ * the end of the array.
+ *
+ * @param array           $array
+ * @param int|string|null $after
+ * @param mixed           $value
+ * @param int|string|null $key When null, the value is appended to the end of the array.
+ * @return array
+ */
+function array_insertAfter (array $array, $after, $value, $key = null)
+{
+  if (is_null ($after)) {
+    $array[$key] = $value;
+    return $array;
+  }
+  else {
+    $p = array_search ($after, $array, true);
+    if ($p === false) $p = count ($array);
+    else ++$p;
+    return array_insertAtPosition ($array, $p, $value, $key);
+  }
+}
+
+/**
+ * Inserts a value with an optional key before an existing array element with a specific key, shifting other values to
+ * make room.
+ *
+ * <p>This function preserves the current order and keys of the array elements.
+ * <p>String keys are supported.
+ * <p>If no array element with the specified key is found, the new value is prepended (with the corresponding key) to
+ * the beginning of the array.
+ *
+ * @param array           $array
+ * @param int|string|null $before
+ * @param mixed           $value
+ * @param int|string|null $key When null, the value is appended to the end of the array.
+ * @return array
+ */
+function array_insertBefore (array $array, $before, $value, $key = null)
+{
+  if (is_null ($before)) {
+    $array[$key] = $value;
+    return $array;
+  }
+  else {
+    $p = array_search ($before, $array, true);
+    if ($p === false) $p = 0;
+    return array_insertAtPosition ($array, $p, $value, $key);
+  }
+}
+
+/**
+ * Inserts a value with an optional key at the specified ordinal position of an array, shifting other values to make
+ * room.
+ *
+ * <p>This function preserves the current order and keys of the array elements.
+ * <p>Inserting a string key at a specific position is supported (unlike `array_splice()`).
+ *
+ * @param array           $array
+ * @param int             $pos An ordinal index (NOT a key of the array).
+ * @param mixed           $value
+ * @param int|string|null $key When null, the value is appended to the end of the array.
+ * @return array
+ */
+function array_insertAtPosition (array $array, $pos, $value, $key = null)
+{
+  if (is_null ($key))
+    $key = count ($array);
+  return array_merge (array_slice ($array, 0, $pos, true), [$key => $value], array_slice ($array, $pos, null, true));
+}
+
+/**
  * Returns the values from multiple columns of the array, identified by the given column keys.
  * Array elements can be objects or arrays.
  * The first element in the array is used to determine the element type for the whole array.
