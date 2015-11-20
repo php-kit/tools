@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Allows an IDE to recognize a callable reference, so that it can validate it and allow one to refactor it.
+ * Allows an IDE to recognize a callable reference, so that it can validate it and allow refactoring it.
  *
  * It is a no-op: it returns the input argument unmodified.
  *
@@ -146,5 +146,3 @@ function identity ()
 {
   return function ($a) { return $a; };
 }
-
-function fref
