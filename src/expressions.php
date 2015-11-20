@@ -133,11 +133,9 @@ function iftrue ($exp, $a, $b = null)
 }
 
 /**
- * Returns `$a` if `$exp` is not *empty*, otherwise it returns `$b` or `null` if `$b` is not specified.
+ * Returns `$a` if `$exp` is not *empty* or false, otherwise it returns `$b` or `null` if `$b` is not specified.
  *
  * <p>**Note:** an empty value is `null` or an empty string.
- *
- * <p>**Note: `$a` is returned even if `$exp` is `false`!**
  *
  * <p>**Warning:** unline the ternary ? operator, all arguments are always evaluated, regardless of the value of
  * `$exp`.
@@ -150,7 +148,7 @@ function iftrue ($exp, $a, $b = null)
  */
 function when ($exp, $a, $b = null)
 {
-  return isset($exp) && $exp !== '' ? $a : $b;
+  return isset($exp) && $exp !== '' && $exp !== false ? $a : $b;
 }
 
 /**
