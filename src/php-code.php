@@ -64,7 +64,8 @@ class PhpCode
    */
   static function compile ($_exp, $_vars = '')
   {
-    return eval("return function($_vars){return $_exp;};");
+    // For compatibility with PHP < 7, the eval MUST be performed outside a static class context!
+    return globalEval ("return function($_vars){return $_exp;};");
   }
 
   /**
@@ -146,4 +147,15 @@ class PhpCode
     return eval ("return true;return $exp;");
   }
 
+}
+
+/**
+ * For internal use by {@see PhpCode::compile()}
+ * @private
+ * @param string $x
+ * @return mixed
+ */
+function globalEval ($x)
+{
+  return eval ($x);
 }
