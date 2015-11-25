@@ -222,7 +222,9 @@ function array_getColumn (array $array, $key)
 function array_insertAfter (array $array, $after, $value, $key = null)
 {
   if (is_null ($after)) {
-    $array[$key] = $value;
+    if (isset($key))
+      $array[$key] = $value;
+    else $array[] = $value;
     return $array;
   }
   else {
