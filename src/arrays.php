@@ -87,6 +87,18 @@ function array_fields (array $a, array $keys, $def = null)
 }
 
 /**
+ * Returns a copy of the given array having only the specified keys.
+ *
+ * @param array $a    The original array.
+ * @param array $keys A list of keys to be copied.
+ * @return array A subset of the original array.
+ */
+function array_only (array $a, array $keys)
+{
+  return array_intersect_key ($a, array_flip ($keys));
+}
+
+/**
  * Searches an array for the first element where the specified field matches the given value.
  * Supports arrays of objects or arrays of arrays.
  *
