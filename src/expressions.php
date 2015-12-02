@@ -184,5 +184,5 @@ function swap (& $a, & $b) {
  * @return string
  */
 function typeOf ($x) {
-  return get_class($x) ?: gettype ($x);
+  return is_object($x) ? get_class($x) : gettype ($x);
 }
