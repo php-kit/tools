@@ -94,7 +94,7 @@ function exists ($exp)
  * @param mixed $c
  * @return mixed
  * @see when
- * @see iftrue
+ * @see when
  */
 function either ($a, $b, $c = null)
 {
@@ -117,38 +117,28 @@ function coalesce ()
 }
 
 /**
- * Returns `$a` if `$exp` is *truthy* (not 0, `null` or an empty string, excluding `'0'`), otherwise it returns `$b`
- * or `null` if `$b` is not specified.
+ * Returns `$a` if `$exp` is not:
+ * - `null`
+ * - `false`
+ * - `''`
+ * - 0
  *
- * @param mixed $exp
- * @param mixed $a
- * @param mixed $b
- * @return mixed
- * @see when
- * @see either
- */
-function iftrue ($exp, $a, $b = null)
-{
-  return $exp && $exp !== '0' ? $a : $b;
-}
-
-/**
- * Returns `$a` if `$exp` is not *empty* or false, otherwise it returns `$b` or `null` if `$b` is not specified.
+ * Otherwise, it returns `$b` or `null` if `$b` is not specified.
  *
- * <p>**Note:** an empty value is `null` or an empty string.
+ * > <p>**Note:** string `'0'` is considered to be `true`.
  *
- * <p>**Warning:** unline the ternary ? operator, all arguments are always evaluated, regardless of the value of
+ * > <p>**Warning:** unlike the ternary ? operator, all arguments are always evaluated, regardless of the value of
  * `$exp`.
  * @param boolean $exp
  * @param mixed   $a
  * @param mixed   $b
  * @return mixed
  * @see either
- * @see iftrue
+ * @see when
  */
 function when ($exp, $a, $b = null)
 {
-  return isset($exp) && $exp !== '' && $exp !== false ? $a : $b;
+  return $exp || $exp === '0' ? $a : $b;
 }
 
 /**
