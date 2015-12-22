@@ -129,6 +129,7 @@ function coalesce ()
  *
  * > <p>**Warning:** unlike the ternary ? operator, all arguments are always evaluated, regardless of the value of
  * `$exp`.
+ *
  * @param boolean $exp
  * @param mixed   $a
  * @param mixed   $b
@@ -159,6 +160,7 @@ function enum ($delimiter)
 
 /**
  * Swaps the values of the given variables.
+ *
  * @param mixed $a A variable.
  * @param mixed $b A variable.
  */
@@ -171,6 +173,7 @@ function swap (& $a, & $b)
 
 /**
  * Returns the class name of the argument or, if not an object, a description of its data type.
+ *
  * @param mixed $x
  * @return string
  */
@@ -180,8 +183,9 @@ function typeOf ($x)
 }
 
 /**
- * Returns the class name of the argument or, if not an object, a description of its data type, without the
- * namespace part (if any).
+ * If the argument is an object, this returns its class name without the namespace part.
+ * Other argument types are converted the same way {@see typeOf()} does.
+ *
  * @param mixed $x
  * @return string
  */
@@ -190,6 +194,24 @@ function shortTypeOf ($x)
   if (is_object ($x)) {
     $n = explode ('\\', get_class ($x));
     return array_pop ($n);
+  }
+  return gettype ($x);
+}
+
+/**
+ * If the argument is an object, this returns a formatted HTML span showing its class name without the namespace part,
+ * but it also includesthe namespace via a tooltip.
+ * Other argument types are converted the same way {@see typeOf()} does.
+ *
+ * @param mixed $x
+ * @return string
+ */
+function typeInfoOf ($x)
+{
+  if (is_object ($x)) {
+    $n = explode ('\\', get_class ($x));
+    $c = array_pop ($n);
+    return sprintf ("<kbd class=info title='%s'>%s</kbd>", implode ('\\', $n), $c);
   }
   return gettype ($x);
 }
