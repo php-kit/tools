@@ -111,7 +111,7 @@ function either ($a, $b, $c = null)
  */
 function coalesce ()
 {
-  foreach (func_get_args() as $a)
+  foreach (func_get_args () as $a)
     if (isset($a) && $a !== '') return $a;
   return null;
 }
@@ -147,13 +147,13 @@ function when ($exp, $a, $b = null)
  * <p>**Note:** an empty value is `null` or an empty string.
  *
  * @param string $delimiter
- * @param mixed ...$args
+ * @param mixed  ...$args
  * @return string
  */
 function enum ($delimiter)
 {
-  $args = func_get_args();
-  array_shift($args);
+  $args = func_get_args ();
+  array_shift ($args);
   return join ($delimiter, array_prune ($args));
 }
 
@@ -162,7 +162,8 @@ function enum ($delimiter)
  * @param mixed $a A variable.
  * @param mixed $b A variable.
  */
-function swap (& $a, & $b) {
+function swap (& $a, & $b)
+{
   $x = $a;
   $a = $b;
   $b = $x;
@@ -173,6 +174,22 @@ function swap (& $a, & $b) {
  * @param mixed $x
  * @return string
  */
-function typeOf ($x) {
-  return is_object($x) ? get_class($x) : gettype ($x);
+function typeOf ($x)
+{
+  return is_object ($x) ? get_class ($x) : gettype ($x);
+}
+
+/**
+ * Returns the class name of the argument or, if not an object, a description of its data type, without the
+ * namespace part (if any).
+ * @param mixed $x
+ * @return string
+ */
+function shortTypeOf ($x)
+{
+  if (is_object ($x)) {
+    $n = explode ('\\', get_class ($x));
+    return array_pop ($n);
+  }
+  return gettype ($x);
 }
