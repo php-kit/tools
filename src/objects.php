@@ -94,11 +94,39 @@ function object_fields ($o, array $keys, $def = null)
 
 /**
  * Checks if a class (or class instance) uses a specific trait.
- * @param string|object $class
+ * @param string|object $class Class name or class instance.
  * @param string        $trait Fully qualified trait name.
  * @return bool
  */
-function uses_trait ($class, $trait)
+function usesTrait ($class, $trait)
 {
   return isset(class_uses ($class)[$trait]);
+}
+
+/**
+ * Checks if a class (or class instance) implements a specific interface.
+ *
+ * > **Note:** for instances, it is better to use the {@see instanceof} operator.
+ *
+ * @param string|object $class Class name or class instance.
+ * @param string $interfaceName
+ * @return bool
+ */
+function implementsInterface ($class, $interfaceName)
+{
+  return in_array ($interfaceName, class_implements ($class));
+}
+
+/**
+ * Returns a map of the defined public non-static properties of the specified object.
+ *
+ * > **Note:** this is similar to {@see get_object_vars()} but when called from within a class method it still returns
+ * only the public properties.
+ *
+ * @param object $o
+ * @return array
+ */
+function getPublicProperties ($o)
+{
+  return get_object_vars ($o);
 }
