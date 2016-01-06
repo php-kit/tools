@@ -48,7 +48,7 @@ function object_toClass ($instance, $className)
  *
  * @return array A map of extracted values.
  */
-function object_extract ($o, array $keys, $def = null)
+function object_only ($o, array $keys, $def = null)
 {
   $r = [];
   foreach ($keys as $k)
