@@ -224,5 +224,5 @@ function typeInfoOf ($x)
 function formatClassName ($name) {
   $n = explode ('\\', $name);
   $c = array_pop ($n);
-  return sprintf ("<kbd class=info title='%s'>%s</kbd>", implode ('\\', $n), $c);
+  return sprintf ("<kbd class=info title='%s'>%s</kbd>", $name, $c);
 }

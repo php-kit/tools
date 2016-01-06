@@ -36,6 +36,52 @@ function object_toClass ($instance, $className)
 }
 
 /**
+ * Extracts the values with the given keys from a given object, in the same order as the key list.
+ *
+ * > **Tips:**
+ * > - You may typecast the result to `(object)` if you need an object.
+ * > - You may call `array_values()` on the result if you need a linear list of values; ex. for use with `list()`.
+ *
+ * @param object $o    The object.
+ * @param array  $keys A list of keys to be extracted.
+ * @param mixed  $def  An optional default value to be returned for non-existing keys.
+ *
+ * @return array A map of extracted values.
+ */
+function object_extract ($o, array $keys, $def = null)
+{
+  $r = [];
+  foreach ($keys as $k)
+    $r[$k] = isset($o->$k) ? $o->$k : $def;
+  return $r;
+}
+
+/**
+ * Returns a map of the defined public non-static properties of the specified object.
+ *
+ * > **Note:** this is similar to {@see get_object_vars()} but when called from within a class method it still returns
+ * only the public properties.
+ *
+ * @param object $o
+ * @return array
+ */
+function object_publicProps ($o)
+{
+  return get_object_vars ($o);
+}
+
+/**
+ * Returns a list of names of the defined public non-static properties of the specified object.
+ *
+ * @param object $o
+ * @return string[]
+ */
+function object_propNames ($o)
+{
+  return array_keys (get_object_vars ($o));
+}
+
+/**
  * Copies properties from a source object (or array) into a given object.
  *
  * @param object       $target
@@ -76,24 +122,8 @@ function extendExisting ($target, $src)
 }
 
 /**
- * Extracts the values with the given keys from a given object, in the same order as the key list.
- *
- * @param object $o    The object.
- * @param array  $keys A list of keys to be extracted.
- * @param mixed  $def  An optional default value to be returned for non-existing keys.
- *
- * @return array The list of extracted values.
- */
-function object_fields ($o, array $keys, $def = null)
-{
-  $o = [];
-  foreach ($keys as $k)
-    $o[] = isset($o->$k) ? $o->$k : $def;
-  return $o;
-}
-
-/**
  * Checks if a class (or class instance) uses a specific trait.
+ *
  * @param string|object $class Class name or class instance.
  * @param string        $trait Fully qualified trait name.
  * @return bool
@@ -109,24 +139,10 @@ function usesTrait ($class, $trait)
  * > **Note:** for instances, it is better to use the {@see instanceof} operator.
  *
  * @param string|object $class Class name or class instance.
- * @param string $interfaceName
+ * @param string        $interfaceName
  * @return bool
  */
 function implementsInterface ($class, $interfaceName)
 {
   return in_array ($interfaceName, class_implements ($class));
-}
-
-/**
- * Returns a map of the defined public non-static properties of the specified object.
- *
- * > **Note:** this is similar to {@see get_object_vars()} but when called from within a class method it still returns
- * only the public properties.
- *
- * @param object $o
- * @return array
- */
-function getPublicProperties ($o)
-{
-  return get_object_vars ($o);
 }
