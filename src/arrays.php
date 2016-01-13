@@ -34,6 +34,7 @@ function array_binarySearch (array $array, $what, &$probe, $comparator)
 
 /**
  * Merges an array to the target array, modifying the original.
+ *
  * @param array $a
  * @param array $b
  */
@@ -45,6 +46,7 @@ function array_mergeInto (array &$a, array $b)
 /**
  * Merges an array, object or iterable to the target array, modifying the original, but only for keys already existing
  * on the target.
+ *
  * @param array                    $array
  * @param array|object|Traversable $data
  */
@@ -397,6 +399,7 @@ function array_getColumns (array $array, array $keys)
  *   ],
  * ]
  * ```
+ *
  * @param array  $a       The source data.
  * @param string ...$args The field names.
  * @return array
@@ -514,6 +517,7 @@ function array_orderBy ()
 
 /**
  * Returns the input array stripped of empty elements (those that are either `null` or empty strings).
+ *
  * @param array $data
  * @return array
  */
@@ -670,5 +674,16 @@ function array_normalizeEmptyValues (array $array)
  */
 function array_from ()
 {
-  return func_get_args();
+  return func_get_args ();
+}
+
+/**
+ * Returns the last element of an array.
+ *
+ * @param $array
+ * @return mixed|null null if the array is empty.
+ */
+function last ($array)
+{
+  return ($c = count ($array)) ? $array[$c - 1] : null;
 }
