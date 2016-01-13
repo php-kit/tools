@@ -660,3 +660,15 @@ function array_normalizeEmptyValues (array $array)
   return $array;
 }
 
+/**
+ * Creates an array from the given arguments.
+ *
+ * <p>This is quite useful when used with the splat operator.<br>
+ * Ex: `array_from($a, ...$b)`
+ *
+ * @return array
+ */
+function array_from ()
+{
+  return func_get_args();
+}
