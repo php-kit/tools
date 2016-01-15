@@ -62,13 +62,14 @@ function toFloat ($val)
   return floatval ($val);
 }
 
-function friendlySize ($size, $precision = 0) {
+function friendlySize ($size, $precision = 0)
+{
   $units = ['bytes', 'Kb', 'Mb', 'Gb', 'Tb'];
-  $p = 0;
-  $s = $size;
-  $sc = 1;
-  $sc2 = 1;
-  while (strlen($s) >3) {
+  $p     = 0;
+  $s     = $size;
+  $sc    = 1;
+  $sc2   = 1;
+  while (strlen ($s) > 3) {
     ++$p;
     $sc *= 1024;
     $sc2 *= 1000;
@@ -78,3 +79,25 @@ function friendlySize ($size, $precision = 0) {
   $s += $d;
   return "$s $units[$p]";
 }
+
+/**
+ * Converts the argument into an iterator, if possible.
+ *
+ * @param mixed $t
+ * @return Iterator
+ * @throws InvalidArgumentException
+ */
+function iteratorOf ($t)
+{
+  switch (true) {
+    case $t instanceof IteratorAggregate:
+      return iterator ($t->getIterator ());
+    case $t instanceof Iterator:
+      return $t;
+    case is_array ($t):
+      return new ArrayIterator ($t);
+    default:
+      throw new InvalidArgumentException("Value is not iterable");
+  }
+}
+
