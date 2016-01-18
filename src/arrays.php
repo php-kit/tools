@@ -88,16 +88,18 @@ function array_fields (array $a, array $keys, $def = null)
   return $o;
 }
 
-/**
- * Returns a copy of the given array having only the specified keys.
- *
- * @param array $a    The original array.
- * @param array $keys A list of keys to be copied.
- * @return array A subset of the original array.
- */
-function array_only (array $a, array $keys)
-{
-  return array_intersect_key ($a, array_flip ($keys));
+if (! function_exists('array_only')) {
+  /**
+   * Returns a copy of the given array having only the specified keys.
+   *
+   * @param array $a    The original array.
+   * @param array $keys A list of keys to be copied.
+   * @return array A subset of the original array.
+   */
+  function array_only (array $a, array $keys)
+  {
+    return array_intersect_key ($a, array_flip ($keys));
+  }
 }
 
 /**
@@ -677,13 +679,15 @@ function array_from ()
   return func_get_args ();
 }
 
-/**
- * Returns the last element of an array.
- *
- * @param $array
- * @return mixed|null null if the array is empty.
- */
-function last ($array)
-{
-  return ($c = count ($array)) ? $array[$c - 1] : null;
+if (! function_exists('last')) {
+  /**
+   * Returns the last element of an array.
+   *
+   * @param $array
+   * @return mixed|false false if the array is empty.
+   */
+  function last ($array)
+  {
+    return end ($array);
+  }
 }

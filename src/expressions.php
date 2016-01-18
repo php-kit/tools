@@ -13,56 +13,58 @@ global $_;
  */
 $_ = function ($v) { return $v; };
 
-/**
- * Escapes (secures) data for output.<br>
- *
- * <p>Array values are converted to space-separated value string lists.
- * > A useful use case for an array attribute is the `class` attribute.
- *
- * Object values generate either:
- * - a space-separated list of keys who's corresponding value is truthy;
- * - a semicolon-separated list of key:value elements if at least one value is a string.
- *
- * Boolean values will generate the string "true" or "false".
- *
- * NULL is converted to an empty string.
- *
- * Strings are HTML-encoded.
- *
- * @param mixed $o
- * @return string
- */
-function e ($o)
-{
-  switch (gettype ($o)) {
-    case 'string':
-      break;
-    case 'boolean':
-      return $o ? 'true' : 'false';
-    case 'integer':
-    case 'double':
-      return strval ($o);
-    case 'array':
-      $at = [];
-      $s  = ' ';
-      foreach ($o as $k => $v) {
-        if (!is_string ($v) && !is_numeric ($v))
-          throw new \InvalidArgumentException ("Can't output an array with values of type " . gettype ($v));
-        if (is_numeric ($k))
-          $at[] = $v;
-        else {
-          $at[] = "$k:$v";
-          $s    = ';';
+if (! function_exists('e')) {
+  /**
+   * Escapes (secures) data for output.<br>
+   *
+   * <p>Array values are converted to space-separated value string lists.
+   * > A useful use case for an array attribute is the `class` attribute.
+   *
+   * Object values generate either:
+   * - a space-separated list of keys who's corresponding value is truthy;
+   * - a semicolon-separated list of key:value elements if at least one value is a string.
+   *
+   * Boolean values will generate the string "true" or "false".
+   *
+   * NULL is converted to an empty string.
+   *
+   * Strings are HTML-encoded.
+   *
+   * @param mixed $o
+   * @return string
+   */
+  function e ($o)
+  {
+    switch (gettype ($o)) {
+      case 'string':
+        break;
+      case 'boolean':
+        return $o ? 'true' : 'false';
+      case 'integer':
+      case 'double':
+        return strval ($o);
+      case 'array':
+        $at = [];
+        $s  = ' ';
+        foreach ($o as $k => $v) {
+          if (!is_string ($v) && !is_numeric ($v))
+            throw new \InvalidArgumentException ("Can't output an array with values of type " . gettype ($v));
+          if (is_numeric ($k))
+            $at[] = $v;
+          else {
+            $at[] = "$k:$v";
+            $s    = ';';
+          }
         }
-      }
-      $o = implode ($s, $at);
-      break;
-    case 'NULL':
-      return '';
-    default:
-      throw new \InvalidArgumentException ("Can't output a value of type " . gettype ($o));
+        $o = implode ($s, $at);
+        break;
+      case 'NULL':
+        return '';
+      default:
+        throw new \InvalidArgumentException ("Can't output a value of type " . gettype ($o));
+    }
+    return htmlentities ($o, ENT_QUOTES, 'UTF-8', false);
   }
-  return htmlentities ($o, ENT_QUOTES, 'UTF-8', false);
 }
 
 /**
