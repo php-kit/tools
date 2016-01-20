@@ -5,14 +5,14 @@
  *
  * It is a no-op: it returns the input argument unmodified.
  *
- * @param callable $f A function reference, in the form of:
- *                    <ul>
+ * @param callable $f   A function reference, in the form of:
+ *                      <ul>
  *                      <li> a Closure instance,
  *                      <li> a function name string,
  *                      <li> a "class::method" string, or
  *                      <li> an array of (className,methodName).
  *                      <li> an array of (classInstance,methodName).
- *                    </ul>
+ *                      </ul>
  * @return callable
  */
 function fn (callable $f)
@@ -22,6 +22,7 @@ function fn (callable $f)
 
 /**
  * Transforms a callable reference into a closure, with optional pre-bound `$this` and/or prepended arguments.
+ *
  * @param callable $fn       A function reference, in the form of:
  *                           <ul>
  *                           <li> a Closure instance,
@@ -44,6 +45,7 @@ function bind (callable $fn, $self = null)
 
 /**
  * Transforms a callable reference into a closure, with optional pre-bound `$this` and/or appended arguments.
+ *
  * @param callable $fn       A function reference, in the form of:
  *                           <ul>
  *                           <li> a Closure instance,
@@ -69,6 +71,7 @@ function bindRight (callable $fn, $self = null)
  *
  * The expression is compiled only once, further calls to this function with the same argument will return a cached
  * instance.
+ *
  * @param string $exp An expression with the syntax: "$arg1,$arg2,... => php_expression".
  *                    <p>The string must be delimited with single quotes.
  *                    <p>Ex:
@@ -92,6 +95,7 @@ function f ($exp)
  *
  * The expression is compiled only once, further calls to this function with the same argument will return a cached
  * instance.
+ *
  * @param string $exp A PHP expression where the token `$x` refers to the function's argument.
  *                    <p>The string must be delimited with single quotes.
  *                    <p>Ex:
@@ -140,9 +144,20 @@ function cached ($fn)
 
 /**
  * Returns a function that returns the input argument unmodified.
+ *
  * @return Closure
  */
 function identity ()
 {
   return function ($a) { return $a; };
+}
+
+/**
+ * Returns a function that performs no operation.
+ *
+ * @return Closure
+ */
+function nop ()
+{
+  return function () { };
 }
