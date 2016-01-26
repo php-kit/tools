@@ -2,6 +2,7 @@
 
 /**
  * Checks if a string begins with a given substring.
+ *
  * @param string $str
  * @param string $substr
  * @return bool
@@ -13,6 +14,7 @@ function str_beginsWith ($str, $substr)
 
 /**
  * Checks if a string ends with a given substring.
+ *
  * @param string $str
  * @param string $substr
  * @return bool
@@ -136,6 +138,7 @@ function str_encodeJavasciptStr ($str, $delim = '"')
  * Converts an hyphenated compound word into a camel-cased form.
  *
  * Ex: `my-long-name => myLongName`
+ *
  * @param string $name
  * @param bool   $ucfirst When `true` the first letter is capitalized, otherwhise it is lower cased.
  * @return string
@@ -148,6 +151,7 @@ function dehyphenate ($name, $ucfirst = false)
 
 /**
  * Converts a string to camel cased form.
+ *
  * @param string $name
  * @param bool   $ucfirst When `true` the first letter is capitalized, otherwhise it is lower cased.
  * @return string
@@ -168,30 +172,30 @@ function trimText ($text, $maxSize)
   return join (' ', $a) . ' (...)';
 }
 
-function trimHTMLText ($text, $maxSize)
+function trimHTMLText ($text, $maxSize, $marker = '')
 {
-  if (strlen ($text) <= $maxSize)
+  if (mb_strlen ($text) <= $maxSize)
     return $text;
-  $text = substr ($text, 0, $maxSize);
-  $a    = strrpos ($text, '>');
-  $b    = strrpos ($text, '<');
+  $text = mb_substr ($text, 0, $maxSize);
+  $a    = mb_strrpos ($text, '>');
+  $b    = mb_strrpos ($text, '<');
   if ($b !== false && ($a === false || $a < $b))
-    $text = substr ($text, 0, $b);
-  $a = explode (' ', $text);
+    $text = mb_substr ($text, 0, $b);
+  $a = mb_split ('/ /', $text);
   array_pop ($a);
-  $text = join (' ', $a) . ' (...)';
+  $text = join (' ', $a) . $marker;
   $tags = [];
-  if (preg_match_all ('#<.*?>#', $text, $matches)) {
+  if (preg_match_all ('#<.*?>#u', $text, $matches)) {
     foreach ($matches[0] as $match)
-      if (substr ($match, 1, 1) == '/')
+      if (mb_substr ($match, 1, 1) == '/')
         array_pop ($tags);
-      else if (substr ($match, -2, 1) != '/')
-        array_push ($tags, trim (substr ($match, 1, strlen ($match) - 2)));
+      else if (mb_substr ($match, -2, 1) != '/')
+        array_push ($tags, trim (mb_substr ($match, 1, mb_strlen ($match) - 2)));
     $tags = array_reverse ($tags);
     foreach ($tags as $tag) {
-      $a = strpos ($tag, ' ');
+      $a = mb_strpos ($tag, ' ');
       if ($a)
-        $tag = substr ($tag, 0, $a);
+        $tag = mb_substr ($tag, 0, $a);
       $text .= "</$tag>";
     }
   }
@@ -209,18 +213,65 @@ function strJoin ($s1, $s2, $delimiter)
  *
  * This is specially useful when used with color-tagged strings meant for terminal output.
  * > Ex: `"<color-name>text</color-name>"`
+ *
  * @param string $str
  * @param int    $width The desired minimum width, in characters.
  * @param int    $align One of the STR_PAD_XXX constants.
+ * @param string $pad   The paddind character(s).
  * @return string
  */
-function taggedStrPad ($str, $width, $align = STR_PAD_RIGHT)
+function taggedStrPad ($str, $width, $align = STR_PAD_RIGHT, $pad = ' ')
 {
   $w    = taggedStrLen ($str);
   $rawW = mb_strlen ($str);
   $d    = $rawW - $w;
 
-  return mb_str_pad ($str, $width + $d, ' ', $align);
+  return mb_str_pad ($str, $width + $d, $pad, $align);
+}
+
+/**
+ * Performs cropping on strings having embedded tags.
+ *
+ * This is specially useful when used with color-tagged strings meant for terminal output.
+ * > Ex: `"<color-name>text</color-name>"`
+ *
+ * @param string $str
+ * @param int    $width  The desired minimum width, in characters.
+ * @param string $marker The overflow marker.
+ * @return string
+ */
+function taggedStrCrop ($str, $width, $marker = '')
+{
+  $w = taggedStrLen ($str);
+  if ($w <= $width)
+    return $str;
+
+  $o      = '';
+  $tags   = [];
+  $curLen = 0;
+  $markLen = mb_strlen ($marker, 'UTF-8');
+  while (strlen($str)) {
+    if (!preg_match ('/<(.*?)>/u', $str, $m, PREG_OFFSET_CAPTURE))
+      return $o . mb_substr ($str, 0, $width - $curLen - $markLen) . $marker;
+    list ($tag, $ofs) = $m[0];
+    $tagName = $m[1][0];
+    $seg     = mb_substr ($str, 0, $ofs);
+    $str     = mb_substr ($str, $ofs + mb_strlen ($tag, 'UTF-8'));
+    $segLen  = mb_strlen ($seg, 'UTF-8');
+    $curLen += $segLen;
+    if ($curLen >= $width) {
+      $o .= mb_substr ($seg, 0, $width - $curLen - $markLen) . $marker;
+      break;
+    }
+    else $o .= $seg;
+    if ($tag[1] == '/')
+      array_pop ($tags);
+    else $tags[] = $tagName;
+    $o .= "$tag";
+  }
+  while ($tags)
+    $o .= '</' . array_pop ($tags) . '>';
+  return $o;
 }
 
 /**
@@ -228,6 +279,7 @@ function taggedStrPad ($str, $width, $align = STR_PAD_RIGHT)
  *
  * This is specially useful when used with color-tagged strings meant for terminal output.
  * > Ex: `"<color-name>text</color-name>"`
+ *
  * @param string $str
  * @return int The string's length, in characters.
  */
