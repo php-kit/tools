@@ -117,7 +117,7 @@ if (! function_exists('array_only')) {
  */
 function array_find (array $arr, $fld, $val, $strict = false)
 {
-  if (count ($arr)) {
+  if (isset ($arr[0])) {
     if (is_object ($arr[0])) {
       if ($strict) {
         foreach ($arr as $i => $v)
