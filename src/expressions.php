@@ -148,9 +148,9 @@ function when ($exp, $a, $b = null)
 }
 
 /**
- * Builds a string with a list of the given items that are not empty, delimited by `$delimiter`.
+ * Builds a string with a list of the given items that are not empty (after begin trimmed), delimited by `$delimiter`.
  *
- * <p>**Note:** an empty value is `null` or an empty string.
+ * > <p>**Note:** an empty value is `null` or an empty string.
  *
  * @param string $delimiter
  * @param mixed  ...$args
@@ -160,7 +160,7 @@ function enum ($delimiter)
 {
   $args = func_get_args ();
   array_shift ($args);
-  return join ($delimiter, array_prune ($args));
+  return join ($delimiter, array_prune (array_map ('trim', $args)));
 }
 
 /**
