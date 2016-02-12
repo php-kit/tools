@@ -65,7 +65,7 @@ function array_mergeExisting (array &$array, $data)
  * @param array $a    The source data.
  * @param array $keys The keys of the values to be extracted from each $array element.
  * @param mixed $def  An optional default value to be returned for non-existing keys.
- * @return PowerArray Self, for chaining.
+ * @return array
  */
 function array_extract (array $a, array $keys, $def = null)
 {
