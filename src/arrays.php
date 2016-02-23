@@ -88,7 +88,7 @@ function array_fields (array $a, array $keys, $def = null)
   return $o;
 }
 
-if (! function_exists('array_only')) {
+if (!function_exists ('array_only')) {
   /**
    * Returns a copy of the given array having only the specified keys.
    *
@@ -570,7 +570,7 @@ function get (array $array = null, $key, $def = null)
  * the original array element.
  *
  * Unlike array_map, the original keys will be preserved, unless the callback defines the
- * key parameter as a reference and modifies the key.
+ * key parameter as a reference and modifies it.
  *
  * @param array|Traversable $src Anything that can be iterated on a `foreach` loop.
  *                               If `null`, `null` is returned.
@@ -593,6 +593,38 @@ function map ($src, callable $fn)
 }
 
 /**
+ * Filters an array or a {@see Traversable} sequence by calling a callback.
+ *
+ * The function will receive a value and a key for each array element and it should return `true` if the element will be
+ * kept on the resulting array, `false` to drop it.
+ *
+ * Unlike array_filter, the original keys will be preserved, unless the callback defines the
+ * key parameter as a reference and modifies it.
+ *
+ * @param array|Traversable $src Anything that can be iterated on a `foreach` loop.
+ *                               If `null`, `null` is returned.
+ * @param callable          $fn  The callback.
+ * @return array
+ * @throws InvalidArgumentException If `$src` is not iterable.
+ */
+function filter ($src, callable $fn)
+{
+  if (isset($src)) {
+    if (is_array ($src))
+      return array_filter ($src, $fn, ARRAY_FILTER_USE_BOTH);
+    if ($src instanceof Traversable) {
+      $o = [];
+      foreach ($src as $k => $v)
+        if ($fn ($v, $k))
+          $o[$k] = $v;
+      return $o;
+    }
+    throw new InvalidArgumentException;
+  }
+  return $src;
+}
+
+/**
  * Calls a transformation function for each element of an array and allows that function to drop elements from the
  * resulting array,
  *
@@ -600,7 +632,7 @@ function map ($src, callable $fn)
  * the original array element, or `null` to drop the element.
  *
  * Unlike array_map, the original keys will be preserved, unless the callback defines the
- * key parameter as a reference and modifies the key.
+ * key parameter as a reference and modifies it.
  *
  * @param array|Traversable $src Anything that can be iterated on a `foreach` loop.
  *                               If `null`, `null` is returned.
@@ -679,7 +711,7 @@ function array_from ()
   return func_get_args ();
 }
 
-if (! function_exists('last')) {
+if (!function_exists ('last')) {
   /**
    * Returns the last element of an array.
    *
