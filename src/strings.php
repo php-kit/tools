@@ -246,11 +246,11 @@ function taggedStrCrop ($str, $width, $marker = '')
   if ($w <= $width)
     return $str;
 
-  $o      = '';
-  $tags   = [];
-  $curLen = 0;
+  $o       = '';
+  $tags    = [];
+  $curLen  = 0;
   $markLen = mb_strlen ($marker, 'UTF-8');
-  while (strlen($str)) {
+  while (strlen ($str)) {
     if (!preg_match ('/<(.*?)>/u', $str, $m, PREG_OFFSET_CAPTURE))
       return $o . mb_substr ($str, 0, $width - $curLen - $markLen) . $marker;
     list ($tag, $ofs) = $m[0];
@@ -308,4 +308,22 @@ function mb_ord ($char, $encoding = 'UTF-8')
   else {
     return mb_ord (mb_convert_encoding ($char, 'UCS-4BE', $encoding), 'UCS-4BE');
   }
+}
+
+/**
+ * Extracts a substring from a string using a search pattern, removing the match from the original string and returning
+ * it.
+ *
+ * @param string $source  The string from where to extract a substring.
+ * @param string $pattern A regular expression for selecting what text to extract.
+ * @return string The extracted text, or '' if nothing matched.
+ */
+function str_extract (&$source, $pattern)
+{
+  $out    = '';
+  $source = preg_replace_callback ($pattern, function ($m) use (&$out) {
+    $out = $m[1];
+    return '';
+  }, $source);
+  return $out;
 }
