@@ -327,3 +327,79 @@ function str_extract (&$source, $pattern)
   }, $source);
   return $out;
 }
+
+/**
+ * Returns the first `$count` segments of a string segmented by a given delimiter.
+ *
+ * > <p>**Ex:** you can use this to extract file path segments (delimited by `'/'`).
+ *
+ * @param string $str
+ * @param string $delimiter The segment delimiter to search for (ex: '/').
+ * @param int    $count     How many segments to retrieve.
+ * @return string
+ */
+function str_firstSegment ($str, $delimiter, $count = 1)
+{
+  $p = -1;
+  while ($count-- && $p !== false)
+    $p = strpos ($str, $delimiter, $p + 1);
+  if ($p === false) return $p;
+  return substr ($str, 0, $p);
+}
+
+/**
+ * Returns the last `$count` segments of a string segmented by a given delimiter.
+ *
+ * > <p>**Ex:** you can use this to extract file path segments (delimited by `'/'`) or to get a file extension.
+ *
+ * @param string $str
+ * @param string $delimiter The segment delimiter to search for (ex: '/').
+ * @param int    $count     How many segments to retrieve.
+ * @return string
+ */
+function str_lastSegment ($str, $delimiter, $count = 1)
+{
+  $p = 0;
+  while ($count-- && $p !== false)
+    $p = strrpos ($str, $delimiter, -$p - 1);
+  if ($p === false) return $p;
+  return substr ($str, $p + 1);
+}
+
+/**
+ * Removes the first `$count` segments of a string segmented by a given delimiter.
+ *
+ * > <p>**Ex:** you can use this to remove segments of a file path.
+ *
+ * @param string $str
+ * @param string $delimiter The segment delimiter to search for (ex: '/').
+ * @param int    $count     How many segments to remove.
+ * @return string
+ */
+function str_stripFirst ($str, $delimiter, $count = 1)
+{
+  $p = -1;
+  while ($count-- && $p !== false)
+    $p = strpos ($str, $delimiter, $p + 1);
+  if ($p === false) return $p;
+  return substr ($str, $p + 1);
+}
+
+/**
+ * Removes the last `$count` segments of a string segmented by a given delimiter.
+ *
+ * > <p>**Ex:** you can use this to remove an extension from a file path.
+ *
+ * @param string $str
+ * @param string $delimiter The segment delimiter to search for (ex: '/').
+ * @param int    $count     How many segments to remove.
+ * @return string
+ */
+function str_stripLast ($str, $delimiter, $count = 1)
+{
+  $p = 0;
+  while ($count-- && $p !== false)
+    $p = strrpos ($str, $delimiter, -$p - 1);
+  if ($p === false) return $p;
+  return substr ($str, 0, $p);
+}
