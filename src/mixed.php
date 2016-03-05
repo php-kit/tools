@@ -2,6 +2,7 @@
 
 /**
  * Unified interface for retrieving a value by property from an object or by key from an array.
+ *
  * @param mixed  $data
  * @param string $key
  * @param mixed  $default Value to return if the key doesn't exist.
@@ -18,6 +19,7 @@ function getField ($data, $key, $default = null)
 
 /**
  * Unified interface to set a value on an object's property or at an array's key.
+ *
  * @param mixed  $data
  * @param string $key
  * @param mixed  $value
@@ -35,6 +37,7 @@ function setField (&$data, $key, $value)
  * Unified interface for retrieving a reference to an object's property or to an array's element.
  *
  * If the key doesn't exist, it is initialized to a null value.
+ *
  * @param mixed  $data
  * @param string $key
  * @param mixed  $default   Value to store at the specified key if that key doesn't exist.
@@ -61,7 +64,7 @@ function & getFieldRef (&$data, $key, $default = null, $createObj = false)
 
 function getAt ($target, $path)
 {
-  $segs = explode ('.', $path);
+  $segs = $path === '' ? [] : explode ('.', $path);
   $cur  = $target;
   foreach ($segs as $seg) {
     if (is_null ($cur = getField ($cur, $seg))) break;;
@@ -71,7 +74,7 @@ function getAt ($target, $path)
 
 function & getRefAt (& $target, $path)
 {
-  $segs = explode ('.', $path);
+  $segs = $path === '' ? [] : explode ('.', $path);
   $cur  = $target;
   foreach ($segs as $seg) {
     if (is_null ($cur =& getFieldRef ($cur, $seg))) break;;
@@ -81,7 +84,7 @@ function & getRefAt (& $target, $path)
 
 function setAt (& $target, $path, $v, $assoc = false)
 {
-  $segs = explode ('.', $path);
+  $segs = $path === '' ? [] : explode ('.', $path);
   $cur  =& $target;
   foreach ($segs as $seg)
     $cur =& getFieldRef ($cur, $seg, [], !$assoc);
@@ -90,7 +93,7 @@ function setAt (& $target, $path, $v, $assoc = false)
 
 function unsetAt (& $target, $path)
 {
-  $paths = explode ('.', $path);
+  $paths = $path === '' ? [] : explode ('.', $path);
   $key   = array_pop ($paths);
   $path  = implode ('.', $paths);
   $v     =& getRefAt ($target, $path);

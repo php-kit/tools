@@ -44,6 +44,29 @@ function array_mergeInto (array &$a, array $b)
 }
 
 /**
+ * Merges an array or an object to the target array, modifying the original, recursively.
+ * It supports nested object properties.
+ *
+ * @param array        $a
+ * @param array|object $b
+ */
+function array_recursiveMergeInto (array &$a, $b)
+{
+  foreach ($b as $k => $v) {
+    if (!isset($a[$k]))
+      $a[$k] = $v;
+    else {
+      $c = $a[$k];
+      if (is_array ($c))
+        $a[$k] = array_merge ($c, $v);
+      elseif (is_object ($c))
+        extend ($c, $v);
+      else $a[$k] = $v;
+    }
+  }
+}
+
+/**
  * Merges an array, object or iterable to the target array, modifying the original, but only for keys already existing
  * on the target.
  *
@@ -688,13 +711,16 @@ function array_stripEmptyValues (array $array)
  * Converts all values that are empty strings to `null`.
  *
  * @param array $array The source array.
+ * @param bool  $recursive
  * @return array The modified array.
  */
-function array_normalizeEmptyValues (array $array)
+function array_normalizeEmptyValues (array $array, $recursive = false)
 {
-  foreach ($array as $k => $v)
+  foreach ($array as $k => &$v)
     if ($v === '')
-      $array[$k] = null;
+      $v = null;
+    elseif ($recursive && is_array ($v))
+      $v = array_normalizeEmptyValues ($v, true);
   return $array;
 }
 
