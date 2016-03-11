@@ -101,9 +101,30 @@ function extend ($target, $src)
 }
 
 /**
+ * Copies properties from a source object (or array) into a given object, but only for properties that are not yet set
+ * on the tager.
+ *
+ * @param object       $target
+ * @param object|array $src
+ *
+ * @throws Exception
+ */
+function defaults ($target, $src)
+{
+  if (isset($src)) {
+    if (is_object ($target)) {
+      foreach ($src as $k => $v)
+        if (!exists ($target->$k))
+          $target->$k = $v;
+    }
+    else throw new InvalidArgumentException('Invalid target for ' . __FUNCTION__);
+  }
+}
+
+/**
  * Copies non-empty properties from a source object (or array) into a given object.
  * > **Note:** empty properties are those containing null or an empty string.
- * > **Note:** if the object supports ArrayAccess, that interface will also be used for checking and assignement.
+ * > **Note:** if the object supports ArrayAccess, that interface will also be used for checking and assignment.
  *
  * @param object|ArrayAccess       $target
  * @param object|array|Traversable $src
