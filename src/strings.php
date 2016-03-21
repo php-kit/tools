@@ -356,7 +356,7 @@ function str_extractSegment ($source, $delimiterPattern)
  *
  * @see str_splitGetFirst which is similar, but returns an array.
  */
-function str_firstSegments ($str, $delimiter, $count = 1)
+function str_segmentsFirst ($str, $delimiter, $count = 1)
 {
   $p = -1;
   while ($count-- && $p !== false)
@@ -377,7 +377,7 @@ function str_firstSegments ($str, $delimiter, $count = 1)
  *
  * @see str_splitGetLast which is similar, but returns an array.
  */
-function str_lastSegments ($str, $delimiter, $count = 1)
+function str_segmentsLast ($str, $delimiter, $count = 1)
 {
   $p = 0;
   while ($count-- && $p !== false)
@@ -398,7 +398,7 @@ function str_lastSegments ($str, $delimiter, $count = 1)
  *
  * @see str_splitStripFirst which is similar, but returns an array.
  */
-function str_stripFirstSegments ($str, $delimiter, $count = 1)
+function str_segmentsStripFirst ($str, $delimiter, $count = 1)
 {
   $p = -1;
   while ($count-- && $p !== false)
@@ -419,7 +419,7 @@ function str_stripFirstSegments ($str, $delimiter, $count = 1)
  *
  * @see str_splitStripLast which is similar, but returns an array.
  */
-function str_stripLastSegments ($str, $delimiter, $count = 1)
+function str_segmentsStripLast ($str, $delimiter, $count = 1)
 {
   $p = 0;
   while ($count-- && $p !== false)
@@ -438,7 +438,7 @@ function str_stripLastSegments ($str, $delimiter, $count = 1)
  * @param int    $count     How many segments to retrieve.
  * @return string[]
  *
- * @see str_firstSegments which is similar, but returns a string.
+ * @see str_segmentsFirst which is similar, but returns a string.
  */
 function str_splitGetFirst ($str, $delimiter, $count = 1)
 {
@@ -455,7 +455,7 @@ function str_splitGetFirst ($str, $delimiter, $count = 1)
  * @param int    $count     How many segments to retrieve.
  * @return string[]
  *
- * @see str_lastSegments which is similar, but returns a string.
+ * @see str_segmentsLast which is similar, but returns a string.
  */
 function str_splitGetLast ($str, $delimiter, $count = 1)
 {
@@ -472,7 +472,7 @@ function str_splitGetLast ($str, $delimiter, $count = 1)
  * @param int    $count     How many segments to remove.
  * @return string[]
  *
- * @see str_stripFirstSegments which is similar, but returns a string.
+ * @see str_segmentsStripFirst which is similar, but returns a string.
  */
 function str_splitStripFirst ($str, $delimiter, $count = 1)
 {
@@ -489,7 +489,7 @@ function str_splitStripFirst ($str, $delimiter, $count = 1)
  * @param int    $count     How many segments to remove.
  * @return string[]
  *
- * @see str_stripLastSegments which is similar, but returns a string.
+ * @see str_segmentsStripLast which is similar, but returns a string.
  */
 function str_splitStripLast ($str, $delimiter, $count = 1)
 {
