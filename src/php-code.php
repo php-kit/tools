@@ -79,14 +79,16 @@ class PhpCode
    */
   static function evalConstant ($exp, &$valid = null)
   {
-    $valid = true;
-    $exp   = trim ($exp);
-    if ($exp[0] == '"' || $exp[0] == "'") return substr ($exp, 1, -1);
-    if (is_numeric ($exp)) {
-      return ctype_digit ($exp) ? intval ($exp) : floatVal ($exp);
+    $exp = trim ($exp);
+    if ($exp !== '') {
+      $valid = true;
+      if ($exp[0] == '"' || $exp[0] == "'") return substr ($exp, 1, -1);
+      if (is_numeric ($exp)) {
+        return ctype_digit ($exp) ? intval ($exp) : floatVal ($exp);
+      }
+      if (defined ($exp))
+        return constant ($exp);
     }
-    if (defined ($exp))
-      return constant ($exp);
     $valid = false;
     return null;
   }
