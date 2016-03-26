@@ -171,9 +171,7 @@ function enum ($delimiter)
  */
 function swap (& $a, & $b)
 {
-  $x = $a;
-  $a = $b;
-  $b = $x;
+  list ($a, $b) = [$b, $a];
 }
 
 /**
