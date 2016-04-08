@@ -312,7 +312,7 @@ function mb_ord ($char, $encoding = 'UTF-8')
 
 /**
  * Extracts a substring from a string using a search pattern, removing the match from the original string and returning
- * it.
+ * it, or the first capture group, if one is defined.
  *
  * @param string $source  The string from where to extract a substring.
  * @param string $pattern A regular expression for selecting what text to extract.
@@ -322,7 +322,7 @@ function str_extract (&$source, $pattern)
 {
   $out    = '';
   $source = preg_replace_callback ($pattern, function ($m) use (&$out) {
-    $out = $m[1];
+    $out = count($m) > 1 ? $m[1] : $m[0];
     return '';
   }, $source);
   return $out;

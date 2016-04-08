@@ -67,7 +67,10 @@ class PhpCode
   static function compile ($_exp, $_vars = '')
   {
     // For compatibility with PHP < 7, the eval MUST be performed outside a static class context!
-    return globalEval ("return function($_vars){return $_exp;};");
+    $fn = globalEval ("return function($_vars){return $_exp;};");
+    if ($fn) return $fn;
+    throw new RuntimeException ('<h5>Compilation failed</h5><p><p>Syntax error on PHP expression:<p><code>' . self::highlight ($_exp) .
+                                '</code>');
   }
 
   /**
@@ -123,6 +126,18 @@ class PhpCode
     if (!self::validate ($code, $out))
       throw new RuntimeException ("Failed executing file $filename.\n\n$out", 2);
     return self::catchErrorsOn (function () use ($code) { self::run ($code); });
+  }
+
+  /**
+   * Highlights syntax on a string of PHP source code.
+   *
+   * @param string $code The raw PHP code.
+   * @return string HTML formatted source code.
+   */
+  static function highlight ($code)
+  {
+    $o = highlight_string ("<?php;$code ?>", true);
+    return str_extract ($o, '%php</span>.*?</span>(.*)<span[^>]*>\?&gt;%s');
   }
 
   /**
