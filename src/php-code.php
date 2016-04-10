@@ -137,7 +137,8 @@ class PhpCode
   static function highlight ($code)
   {
     $o = highlight_string ("<?php;$code ?>", true);
-    return str_extract ($o, '%php</span>.*?</span>(.*)<span[^>]*>\?&gt;%s');
+    $o = str_extract ($o, '%php</span>.*?</span>(.*)<span[^>]*>\?&gt;%s');
+    return $o !== '' ? $o : $code;
   }
 
   /**

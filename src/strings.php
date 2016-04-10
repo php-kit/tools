@@ -162,14 +162,14 @@ function str_camelize ($name, $ucfirst = false)
   return $ucfirst ? $s : lcfirst ($s);
 }
 
-function trimText ($text, $maxSize)
+function trimText ($text, $maxSize, $marker = ' (...)')
 {
   if (strlen ($text) <= $maxSize)
     return $text;
   $a = explode (' ', substr ($text, 0, $maxSize));
   array_pop ($a);
 
-  return join (' ', $a) . ' (...)';
+  return join (' ', $a) . $marker;
 }
 
 function trimHTMLText ($text, $maxSize, $marker = '')
