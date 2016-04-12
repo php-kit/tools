@@ -1,17 +1,38 @@
 <?php
 
 /**
+ * Unified interface for checking if property exists an object or if a key exists on an array.
+ *
+ * @param array|object $data
+ * @param string $key
+ * @return bool
+ */
+function hasField ($data, $key)
+{
+  if (is_object ($data))
+    return property_exists ($data, $key) || ($data instanceof ArrayAccess && isset($data[$key]));
+  if (is_array ($data))
+    return array_key_exists ($key, $data);
+  throw new \InvalidArgumentException;
+}
+
+/**
  * Unified interface for retrieving a value by property from an object or by key from an array.
  *
- * @param mixed  $data
+ * @param array|object  $data
  * @param string $key
  * @param mixed  $default Value to return if the key doesn't exist.
  * @return mixed
  */
 function getField ($data, $key, $default = null)
 {
-  if (is_object ($data))
-    return property_exists ($data, $key) ? $data->$key : $default;
+  if (is_object ($data)) {
+    if (property_exists ($data, $key)) 
+      return $data->$key;
+    if ($data instanceof ArrayAccess && isset($data[$key]))
+      return $data[$key];
+    return $default;
+  }
   if (is_array ($data))
     return array_key_exists ($key, $data) ? $data[$key] : $default;
   throw new \InvalidArgumentException;
@@ -20,7 +41,7 @@ function getField ($data, $key, $default = null)
 /**
  * Unified interface to set a value on an object's property or at an array's key.
  *
- * @param mixed  $data
+ * @param array|object  $data
  * @param string $key
  * @param mixed  $value
  */
