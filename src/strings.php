@@ -311,6 +311,27 @@ function mb_ord ($char, $encoding = 'UTF-8')
 }
 
 /**
+ * Extracts a substring from a string using a search pattern, returning a fixed-length array with the match and the
+ * capture groups.
+ *
+ * @param string $source         The string from where to match a pattern.
+ * @param string $pattern        A regular expression for selecting what text to match.
+ * @param int    $groups         [optional] How many groups to return, even if not all optional groups are present.
+ *                               The returned array will alwaus contain n+1 entries: the total match and the capture
+ *                               groups.
+ * @param bool   $falseOnNoMatch If true, when no match is found, false is returned instead of an array with empty
+ *                               entries.
+ * @param mixed  $emptyValue     The value with which to pad the returned array.
+ * @return array The match, which consists of the total matched string and each of the captured groups.
+ */
+function str_match ($source, $pattern, $groups = 0, $falseOnNoMatch = false, $emptyValue = '')
+{
+  if (!preg_match ($pattern, $source, $m))
+    return $falseOnNoMatch ? false : array_fill (0, $groups + 1, $emptyValue);
+  return array_pad ($m, $groups + 1, $emptyValue);
+}
+
+/**
  * Extracts a substring from a string using a search pattern, removing the match from the original string and returning
  * it, or the first capture group, if one is defined.
  *
@@ -322,15 +343,15 @@ function str_extract (&$source, $pattern)
 {
   $out    = '';
   $source = preg_replace_callback ($pattern, function ($m) use (&$out) {
-    $out = count($m) > 1 ? $m[1] : $m[0];
+    $out = count ($m) > 1 ? $m[1] : $m[0];
     return '';
   }, $source);
   return $out;
 }
 
 /**
- * Extracts a substring from the beginning of string using a search pattern, returning both the extracted segment and
- * the remaining string.
+ * Extracts a substring from the beginning of string using a search pattern for matching a delimitir sequence,
+ * returning both the extracted segment and the remaining string.
  *
  * <p>Empty matches are skipped until a non-empty match is found.
  *
