@@ -516,3 +516,21 @@ function str_splitStripLast ($str, $delimiter, $count = 1)
 {
   return explode ($delimiter, $str, -$count);
 }
+
+/**
+ * Finds the position of the first occurrence of a pattern in a given string.
+ *
+ * @param string $str     The string where to search on.
+ * @param string $pattern A regular expression.
+ * @param int    $from    The position where the search begins, counted from the beginning of the current string.
+ * @param string $match   [optional] If a variable is specified, it will be set to the matched substring.
+ * @return bool|int false if no match was found.
+ */
+function str_search ($str, $pattern, $from = 0, &$match = null)
+{
+  if (preg_match ($pattern, $str, $m, PREG_OFFSET_CAPTURE)) {
+    list ($match, $ofs) = $m[0];
+    return $ofs;
+  }
+  return false;
+}

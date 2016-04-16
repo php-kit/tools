@@ -548,7 +548,27 @@ function array_orderBy ()
  */
 function array_prune (array $data)
 {
-  return array_filter ($data, function ($e) { return isset($e) && $e !== ''; });
+  // This would be more elegant:
+  //   return array_filter ($data, function ($e) { return isset($e) && $e !== ''; });
+  // But this is faster:
+  foreach ($data as $k => $v)
+    if (is_null ($v) || $v === '')
+      unset ($data[$k]);
+  return $data;
+}
+
+/**
+ * Returns a copy of the input array with a set of keys excluded from it.
+ *
+ * <p>Unlike {@see array_diff_key}, the keys are specified as a list of string values.
+ *
+ * @param array    $data
+ * @param string[] $keys
+ * @return array
+ */
+function array_exclude (array $data, array $keys)
+{
+  return array_diff_key ($data, array_fill_keys ($keys, false));
 }
 
 /**
@@ -595,19 +615,24 @@ function get (array $array = null, $key, $def = null)
  * Unlike array_map, the original keys will be preserved, unless the callback defines the
  * key parameter as a reference and modifies it.
  *
- * @param array|Traversable $src Anything that can be iterated on a `foreach` loop.
- *                               If `null`, `null` is returned.
- * @param callable          $fn  The callback.
+ * @param array|Traversable $src     Anything that can be iterated on a `foreach` loop.
+ *                                   If `null`, `null` is returned.
+ * @param callable          $fn      The callback.
+ * @param bool              $useKeys [optional] When true, the iteration keys are passed as a second argument to the
+ *                                   callback. Set to false for compatibility with native PHP functions used as
+ *                                   callbacks, as they will complain if an extra argument is provided.
  * @return array
- * @throws InvalidArgumentException If `$src` is not iterable.
  */
-function map ($src, callable $fn)
+function map ($src, callable $fn, $useKeys = true)
 {
   if (isset ($src)) {
     if (is_array ($src) || $src instanceof Traversable) {
       $o = [];
-      foreach ($src as $k => $v)
-        $o[$k] = $fn ($v, $k);
+      if ($useKeys)
+        foreach ($src as $k => $v)
+          $o[$k] = $fn ($v, $k);
+      else foreach ($src as $k => $v)
+        $o[$k] = $fn ($v);
       return $o;
     }
     throw new InvalidArgumentException;
@@ -691,20 +716,6 @@ function mapAndFilter ($src, callable $fn)
 function missing (array &$array, $key)
 {
   return !array_key_exists ($key, $array) || is_null ($x = $array[$key]) || $x === '';
-}
-
-/**
- * Removes all values that are either null or ''.
- *
- * @param array $array The source array.
- * @return array The modified array.
- */
-function array_stripEmptyValues (array $array)
-{
-  foreach ($array as $k => $v)
-    if (!isset($v) || $v === '')
-      unset ($array[$k]);
-  return $array;
 }
 
 /**
