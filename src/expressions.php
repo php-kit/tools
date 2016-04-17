@@ -61,7 +61,7 @@ if (! function_exists('e')) {
       case 'NULL':
         return '';
       default:
-        throw new \InvalidArgumentException ("Can't output a value of type " . gettype ($o));
+        return typeOf ($o);
     }
     return htmlentities ($o, ENT_QUOTES, 'UTF-8', false);
   }
