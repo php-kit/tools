@@ -13,7 +13,7 @@ global $_;
  */
 $_ = function ($v) { return $v; };
 
-if (! function_exists('e')) {
+if (!function_exists ('e')) {
   /**
    * Escapes (secures) data for output.<br>
    *
@@ -182,7 +182,9 @@ function swap (& $a, & $b)
  */
 function typeOf ($x)
 {
-  return is_object ($x) ? get_class ($x) : gettype ($x);
+  if (is_object ($x)) return get_class ($x);
+  if (is_null ($x)) return 'null';
+  return gettype ($x);
 }
 
 /**
@@ -211,7 +213,7 @@ function shortTypeOf ($x)
  */
 function typeInfoOf ($x)
 {
-  return is_object ($x) ? formatClassName (get_class ($x)) : '<kbd>' . gettype ($x) . '</kbd>';
+  return is_object ($x) ? formatClassName (get_class ($x)) : '<span class=__type>' . typeOf ($x) . '</span>';
 }
 
 /**
@@ -221,8 +223,9 @@ function typeInfoOf ($x)
  * @param string $name
  * @return string
  */
-function formatClassName ($name) {
+function formatClassName ($name)
+{
   $n = explode ('\\', $name);
   $c = array_pop ($n);
-  return sprintf ("<kbd class=info title='%s'>%s</kbd>", $name, $c);
+  return sprintf ("<span class=__type title='%s'>%s</span>", $name, $c);
 }
