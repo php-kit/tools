@@ -67,9 +67,9 @@ class PhpCode
   static function compile ($_exp, $_vars = '')
   {
     // For compatibility with PHP < 7, the eval MUST be performed outside a static class context!
-    $fn = globalEval ("return function($_vars){return $_exp;};");
+    $fn = globalEval ($_c = "return function($_vars){return $_exp;};");
     if ($fn) return $fn;
-    throw new RuntimeException ('<h5>Compilation failed</h5><p><p>Syntax error on PHP expression:<p><code>' . self::highlight ($_exp) .
+    throw new RuntimeException ('<h5>Compilation failed</h5><p><p>Syntax error on PHP expression:<p><code>' . self::highlight ($_c) .
                                 '</code>');
   }
 
