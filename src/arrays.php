@@ -248,16 +248,18 @@ function array_getColumn (array $array, $key)
  */
 function array_insertAfter (array $array, $after, $value, $key = null)
 {
-  if (is_null ($after)) {
+  if (is_null ($after) || !isset($array[$after])) {
     if (isset($key))
       $array[$key] = $value;
     else $array[] = $value;
     return $array;
   }
   else {
-    $p = array_search ($after, $array, true);
-    if ($p === false) $p = count ($array);
-    else ++$p;
+    $p = 0;
+    foreach ($array as $k => $v) {
+      ++$p;
+      if ($k === $after) break;
+    }
     return array_insertAtPosition ($array, $p, $value, $key);
   }
 }
