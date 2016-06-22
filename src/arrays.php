@@ -762,3 +762,20 @@ if (!function_exists ('last')) {
     return end ($array);
   }
 }
+
+/**
+ * Returns an iterator that iterates an array on reverse.
+ *
+ * @param array $a
+ * @param bool  $preserveKeys If set to `true` numeric keys are preserved. Non-numeric keys are not affected by this
+ *                            setting and will always be preserved.
+ * @return \Generator
+ */
+function array_reverse_iterator (array $a, $preserveKeys = false)
+{
+  if ($preserveKeys)
+    for (end ($a); ($key = key ($a)) !== null; prev ($a))
+      yield $key => current ($a);
+  else for (end ($a); ($key = key ($a)) !== null; prev ($a))
+    yield current ($a);
+}
