@@ -382,7 +382,7 @@ function str_segmentsFirst ($str, $delimiter, $count = 1)
   $p = -1;
   while ($count-- && $p !== false)
     $p = strpos ($str, $delimiter, $p + 1);
-  if ($p === false) return $p;
+  if ($p === false) return $str;
   return substr ($str, 0, $p);
 }
 
@@ -403,7 +403,7 @@ function str_segmentsLast ($str, $delimiter, $count = 1)
   $p = 0;
   while ($count-- && $p !== false)
     $p = strrpos ($str, $delimiter, -$p - 1);
-  if ($p === false) return $p;
+  if ($p === false) return $str;
   return substr ($str, $p + 1);
 }
 
@@ -424,7 +424,7 @@ function str_segmentsStripFirst ($str, $delimiter, $count = 1)
   $p = -1;
   while ($count-- && $p !== false)
     $p = strpos ($str, $delimiter, $p + 1);
-  if ($p === false) return $p;
+  if ($p === false) return $str;
   return substr ($str, $p + 1);
 }
 
@@ -445,7 +445,7 @@ function str_segmentsStripLast ($str, $delimiter, $count = 1)
   $p = 0;
   while ($count-- && $p !== false)
     $p = strrpos ($str, $delimiter, -$p - 1);
-  if ($p === false) return $p;
+  if ($p === false) return $str;
   return substr ($str, 0, $p);
 }
 
