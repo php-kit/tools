@@ -69,15 +69,62 @@ function runCommand ($cmd, $input = '', $extraPath = '', array $extraEnv = null)
 }
 
 /**
+ * Runs a process in the background, detached from the owner process.
+ *
+ * > This only runs on UNIX-compatible systems.
+ *
  * @param string $command    An external command, with optional arguments.
  * @param string $outputFile The file where the command's output should be saved to.
- * @return string The PID.
+ * @return string The PID (process ID).
  */
 function runBackgroundCommand ($command, $outputFile = '/dev/null')
 {
   $PID = shell_exec ("nohup $command > $outputFile 2>&1 & echo $!");
   return ($PID);
 }
+
+/**
+ * Checks if a specific process is running.
+ *
+ * > This only runs on UNIX-compatible systems.
+ *
+ * @param int $pid The process ID.
+ * @return bool true if it's running.
+ */
+function isRunning ($pid)
+{
+  try {
+    $result = shell_exec (sprintf ("ps %d", $pid));
+    if (count (preg_split ("/\n/", $result)) > 2) {
+      return true;
+    }
+  }
+  catch (Exception $e) {
+  }
+  return false;
+}
+
+/**
+ * Stops the process.
+ *
+ * > This only runs on UNIX-compatible systems.
+ *
+ * @param int $pid The process ID.
+ * @return bool `true` if the processes was stopped, `false` otherwise.
+ */
+function stopProcess ($pid)
+{
+  try {
+    $result = shell_exec (sprintf ('kill %d 2>&1', $pid));
+    if (!preg_match ('/No such process/', $result)) {
+      return true;
+    }
+  }
+  catch (Exception $e) {
+  }
+  return false;
+}
+
 
 /**
  * Creates a temporary directory.
