@@ -2,6 +2,7 @@
 
 /**
  * Retrieves an environmental variable.
+ *
  * @param string $var
  * @param string $default
  * @return string
@@ -24,7 +25,7 @@ function env ($var, $default = '')
  * Status code -1 = command not found; other status codes = status returned by command execution.
  * @return string Data from the command's STDOUT.
  */
-function runExternalCommand ($cmd, $input = '', $extraPath = '', array $extraEnv = null)
+function runCommand ($cmd, $input = '', $extraPath = '', array $extraEnv = null)
 {
   $descriptorSpec = [
     0 => ["pipe", "r"], // stdin is a pipe that the child will read from
@@ -68,6 +69,17 @@ function runExternalCommand ($cmd, $input = '', $extraPath = '', array $extraEnv
 }
 
 /**
+ * @param string $command    An external command, with optional arguments.
+ * @param string $outputFile The file where the command's output should be saved to.
+ * @return string The PID.
+ */
+function runBackgroundCommand ($command, $outputFile = '/dev/null')
+{
+  $PID = shell_exec ("nohup $command > $outputFile 2>&1 & echo $!");
+  return ($PID);
+}
+
+/**
  * Creates a temporary directory.
  *
  * @param        $dir
@@ -88,11 +100,13 @@ function tempdir ($dir, $prefix = '', $mode = 0700)
 
 /**
  * Returns an ancestor directory of the given directory, `n` levels above.
- * @param string $path The starting path.
- * @param int $times How many times to travel up the directory hierarchy.
+ *
+ * @param string $path  The starting path.
+ * @param int    $times How many times to travel up the directory hierarchy.
  * @return string The resulting path.
  */
-function updir ($path, $times = 1) {
+function updir ($path, $times = 1)
+{
   while ($times--) $path = dirname ($path);
   return $path;
 }

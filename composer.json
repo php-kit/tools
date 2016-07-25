@@ -27,7 +27,7 @@
       "src/functions.php",
       "src/mixed.php",
       "src/objects.php",
-      "src/runtime.php",
+      "src/profiling.php",
       "src/strings.php",
       "src/system.php",
       "src/php-code.php",
