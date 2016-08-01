@@ -70,7 +70,7 @@ if (!function_exists ('e')) {
 /**
  * Checks if the specified value is not empty.
  *
- * <p>**Note:** an empty value is `null` or an empty string.
+ * <p>**Note:** an empty value is `null`, an empty string or an empty array.
  *
  * <p>**Warning:** do not use this for checking the existence of array elements or object properties.<br>
  * `exists()` is not equivalent to `empty()` or `isset()`, as those are special language constructs.
@@ -86,7 +86,7 @@ if (!function_exists ('e')) {
  */
 function exists ($exp)
 {
-  return isset($exp) && $exp !== '';
+  return isset($exp) && $exp !== '' && $exp !== [];
 }
 
 /**
@@ -117,7 +117,7 @@ function either ($a, $b, $c = null)
 function coalesce ()
 {
   foreach (func_get_args () as $a)
-    if (isset($a) && $a !== '') return $a;
+    if (isset($a) && $a !== '' && $a !== []) return $a;
   return null;
 }
 
@@ -130,7 +130,7 @@ function coalesce ()
  *
  * Otherwise, it returns `$b` or `null` if `$b` is not specified.
  *
- * > <p>**Note:** string `'0'` is considered to be `true`.
+ * > <p>**Note:** string `'0'` is considered to be `true` (just like in Javascript).
  *
  * > <p>**Warning:** unlike the ternary ? operator, all arguments are always evaluated, regardless of the value of
  * `$exp`.
