@@ -36,24 +36,45 @@ function object_toClass ($instance, $className)
 }
 
 /**
- * Extracts the values with the given keys from a given object, in the same order as the key list.
+ * Extracts from an object a list of values having specific property names, in the same order as the name list and
+ * having the same cardinality of the later.
  *
- * > **Tips:**
- * > - You may typecast the result to `(object)` if you need an object.
- * > - You may call `array_values()` on the result if you need a linear list of values; ex. for use with `list()`.
+ * ><p>Unlike {@see object_only}, properties that have no value on the target object will generate values of value $def
+ * (defaults to null), so the cardinality of the resulting array matches that of the property names array.
  *
- * @param object $o    The object.
- * @param array  $keys A list of keys to be extracted.
- * @param mixed  $def  An optional default value to be returned for non-existing keys.
+ * ><p>**Tips:**<p>
+ * ><p>- You may typecast the result to `(object)` if you need an object.
+ * ><p>- You may call `array_values()` on the result if you need a linear list of values; ex. for use with `list()`.
  *
- * @return array A map of extracted values.
+ * @param array $o    The object.
+ * @param array $keys A list of property names to be extracted.
+ * @param mixed $def  An optional default value to be returned for non-existing keys.
+ * @return array The sequential list of extracted values.
  */
-function object_only ($o, array $keys, $def = null)
+function object_fields ($o, array $keys, $def = null)
 {
   $r = [];
   foreach ($keys as $k)
     $r[$k] = isset($o->$k) ? $o->$k : $def;
   return $r;
+}
+
+/**
+ * Extracts specific properties from an object.
+ *
+ * <p>Properties not present on the target object will not be present on the output array.
+ *
+ * ><p>**Tips:**<p>
+ * ><p>- You may typecast the result to `(object)` if you need an object.
+ * ><p>- You may call `array_values()` on the result if you need a linear list of values; ex. for use with `list()`.
+ *
+ * @param object $o    The object.
+ * @param array  $keys A list of names of properties to extract.
+ * @return array A map of the extracted values, with keys matching the corresponding property names.
+ */
+function object_only ($o, array $keys)
+{
+  return array_intersect_key (get_object_vars ($o), array_flip ($keys));
 }
 
 /**

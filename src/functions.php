@@ -161,3 +161,22 @@ function nop ()
 {
   return function () { };
 }
+
+/**
+ * Returns a function that extracts either an associative array of specific fields from its argument, or a linear array
+ * of values from one field of its argument
+ *
+ * <p>The function argument can be `object|array|null`.
+ *
+ * ><p>This is meant to be used as a callback for iterable sequences.
+ *
+ * @param array|string $flds If a string, it is the name of the field to extract, otherwise it must be a linear array
+ *                           of field names.
+ * @return Closure
+ */
+function pluck ($flds)
+{
+  return is_array ($flds)
+    ? function ($e) use ($flds) { return fields ($e, $flds); }
+    : function ($e) use ($flds) { return getField ($e, $flds); };
+}

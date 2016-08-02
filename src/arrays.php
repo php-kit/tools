@@ -83,12 +83,11 @@ function array_mergeExisting (array &$array, $data)
 /**
  * Generates a new array where each element is a list of values extracted from the corresponding element on the input
  * array.
- * Result: array - An array with the same cardinality as the input array.
  *
  * @param array $a    The source data.
  * @param array $keys The keys of the values to be extracted from each $array element.
  * @param mixed $def  An optional default value to be returned for non-existing keys.
- * @return array
+ * @return array      An array with the same cardinality as the input array.
  */
 function array_extract (array $a, array $keys, $def = null)
 {
@@ -96,24 +95,32 @@ function array_extract (array $a, array $keys, $def = null)
 }
 
 /**
- * Extracts the values with the given keys from a given array, in the same order as the key list.
+ * Extracts from an array a map of values having specific keys, in the same order as the given key list.
+ *
+ * ><p>**Note:** keys that have no value on the target array will generate values of value $def (defaults to null),
+ * so the cardinality of the resulting array matches that of the keys array, unlike the result from {@see array_only}.
+ *
+ * ><p>**Tip:**<p>
+ * ><p>- You may call `array_values()` on the result if you need a linear list of values; ex. for use with `list()`.
  *
  * @param array $a    The array.
  * @param array $keys A list of keys to be extracted.
  * @param mixed $def  An optional default value to be returned for non-existing keys.
- * @return array The list of extracted values.
+ * @return array A subset of the original array, having the extracted values or defaults.
  */
 function array_fields (array $a, array $keys, $def = null)
 {
   $o = [];
   foreach ($keys as $k)
-    $o[] = array_key_exists ($k, $a) ? $a[$k] : $def;
+    $o[$k] = array_key_exists ($k, $a) ? $a[$k] : $def;
   return $o;
 }
 
 if (!function_exists ('array_only')) {
   /**
    * Returns a copy of the given array having only the specified keys.
+   *
+   * <p>Properties not present on the target array will not be present on the output array.
    *
    * @param array $a    The original array.
    * @param array $keys A list of keys to be copied.

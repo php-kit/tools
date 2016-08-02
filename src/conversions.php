@@ -81,23 +81,24 @@ function friendlySize ($size, $precision = 0)
 }
 
 /**
- * Converts the argument into an iterator, if possible.
+ * Converts the argument into an iterator, if possible, otherwise it throws an exception.
  *
- * @param mixed $t
+ * @param mixed $t An iterable value or null. If null, an empty iterator is returned.
  * @return Iterator
  * @throws InvalidArgumentException
  */
 function iteratorOf ($t)
 {
-  switch (true) {
-    case $t instanceof IteratorAggregate:
+  if (is_array ($t))
+    return new ArrayIterator ($t);
+  if (is_object ($t)) {
+    if ($t instanceof IteratorAggregate)
       return iterator ($t->getIterator ());
-    case $t instanceof Iterator:
+    if ($t instanceof Iterator)
       return $t;
-    case is_array ($t):
-      return new ArrayIterator ($t);
-    default:
-      throw new InvalidArgumentException("Value is not iterable");
   }
+  if (is_null ($t))
+    return new EmptyIterator;
+  throw new InvalidArgumentException("Value is not iterable");
 }
 

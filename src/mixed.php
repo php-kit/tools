@@ -4,7 +4,7 @@
  * Unified interface for checking if property exists an object or if a key exists on an array.
  *
  * @param array|object $data
- * @param string $key
+ * @param string       $key
  * @return bool
  */
 function hasField ($data, $key)
@@ -19,15 +19,15 @@ function hasField ($data, $key)
 /**
  * Unified interface for retrieving a value by property from an object or by key from an array.
  *
- * @param array|object  $data
- * @param string $key
- * @param mixed  $default Value to return if the key doesn't exist.
+ * @param array|object $data
+ * @param string       $key
+ * @param mixed        $default Value to return if the key doesn't exist.
  * @return mixed
  */
 function getField ($data, $key, $default = null)
 {
   if (is_object ($data)) {
-    if (property_exists ($data, $key)) 
+    if (property_exists ($data, $key))
       return $data->$key;
     if ($data instanceof ArrayAccess && isset($data[$key]))
       return $data[$key];
@@ -41,9 +41,9 @@ function getField ($data, $key, $default = null)
 /**
  * Unified interface to set a value on an object's property or at an array's key.
  *
- * @param array|object  $data
- * @param string $key
- * @param mixed  $value
+ * @param array|object $data
+ * @param string       $key
+ * @param mixed        $value
  */
 function setField (&$data, $key, $value)
 {
@@ -52,6 +52,25 @@ function setField (&$data, $key, $value)
   else if (is_array ($data))
     $data[$key] = $value;
   else throw new \InvalidArgumentException;
+}
+
+/**
+ * Extracts values having specific keys from the given array/object.
+ *
+ * @param array|object|null $target
+ * @param array             $keys A list of keys to be extracted.
+ * @return array A map of keys to extracted values or an empty array if $target is null.
+ * @throws InvalidArgumentException If the target is not an array, object or null.
+ */
+function fields ($target, array $keys)
+{
+  if (is_array ($target))
+    return array_only ($target, $keys);
+  if (is_object ($target))
+    return object_only ($target, $keys);
+  if (is_null ($target))
+    return [];
+  throw new InvalidArgumentException ("Not an object or array");
 }
 
 /**
@@ -124,4 +143,3 @@ function unsetAt (& $target, $path)
     unset ($v->$key);
   else throw new InvalidArgumentException ("Not an object or array");
 }
-
