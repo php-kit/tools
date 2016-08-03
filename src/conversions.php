@@ -62,6 +62,32 @@ function toFloat ($val)
   return floatval ($val);
 }
 
+/**
+ * Always rounds up (unlike {@see round}).
+ *
+ * @param float|string $number
+ * @param int          $precision
+ * @return float|int
+ */
+function round_up ($number, $precision = 0)
+{
+  $fig = (int)str_pad ('1', $precision + 1, '0');
+  return (ceil ((float)$number * $fig) / $fig);
+}
+
+/**
+ * Always rounds down (unlike {@see round}).
+ *
+ * @param float|string $number
+ * @param int          $precision
+ * @return float|int
+ */
+function round_down ($number, $precision = 0)
+{
+  $fig = (int)str_pad ('1', $precision + 1, '0');
+  return (floor ((float)$number * $fig) / $fig);
+}
+
 function friendlySize ($size, $precision = 0)
 {
   $units = ['bytes', 'Kb', 'Mb', 'Gb', 'Tb'];
