@@ -567,13 +567,27 @@ function array_prune (array $data)
 }
 
 /**
- * Returns a copy of the input array with a set of keys excluded from it.
+ * Returns a copy of the input array with a set of **values** excluded from it.
+ *
+ * @param  array $array
+ * @param  array $values
+ * @return array
+ * @see array_exclude
+ */
+function array_discard (array $array, array $values)
+{
+  return array_diff ($array, $values);
+}
+
+/**
+ * Returns a copy of the input array with a set of **keys** excluded from it.
  *
  * <p>Unlike {@see array_diff_key}, the keys are specified as a list of string values.
  *
  * @param array    $data
  * @param string[] $keys
  * @return array
+ * @see array_discard
  */
 function array_exclude (array $data, array $keys)
 {

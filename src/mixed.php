@@ -102,41 +102,75 @@ function & getFieldRef (&$data, $key, $default = null, $createObj = false)
   throw new InvalidArgumentException ("Not an object or array");
 }
 
-function getAt ($target, $path)
+/**
+ * Unified interface for retrieving a value by property name from an object or by key name from an array, using a
+ * dot-delimited path to navigate a given data structure.
+ *
+ * @param array|object $data The target data structure.
+ * @param string       $path A dot-delimited path.
+ * @param mixed        $def  [optional] Default value if the key/property is missing or its value is null.
+ * @return mixed|null
+ */
+function getAt ($data, $path, $def = null)
 {
   $segs = $path === '' ? [] : explode ('.', $path);
-  $cur  = $target;
+  $cur  = $data;
   foreach ($segs as $seg) {
     if (is_null ($cur = getField ($cur, $seg))) break;;
   }
-  return $cur;
+  return isset($cur) ? $cur : $def;
 }
 
-function & getRefAt (& $target, $path)
+/**
+ * Unified interface for retrieving a reference by property name from an object or by key name from an array, using a
+ * dot-delimited path to navigate a given data structure.
+ *
+ * @param array|object $data The target data structure.
+ * @param string       $path A dot-delimited path.
+ * @return mixed|null
+ */
+function & getRefAt (& $data, $path)
 {
   $segs = $path === '' ? [] : explode ('.', $path);
-  $cur  = $target;
+  $cur  = $data;
   foreach ($segs as $seg) {
     if (is_null ($cur =& getFieldRef ($cur, $seg))) break;;
   }
   return $cur;
 }
 
-function setAt (& $target, $path, $v, $assoc = false)
+/**
+ * Unified interface for setting a value by property name on an object or by key name on an array, using a
+ * dot-delimited path to navigate a given data structure.
+ *
+ * @param array|object $data  The target data structure.
+ * @param string       $path  A dot-delimited path.
+ * @param mixed        $v     The value.
+ * @param bool         $assoc true if arrays should be provided for missing path nodes, otherwise objects will be
+ *                            created.
+ */
+function setAt (& $data, $path, $v, $assoc = false)
 {
   $segs = $path === '' ? [] : explode ('.', $path);
-  $cur  =& $target;
+  $cur  =& $data;
   foreach ($segs as $seg)
     $cur =& getFieldRef ($cur, $seg, [], !$assoc);
   $cur = $v;
 }
 
-function unsetAt (& $target, $path)
+/**
+ * Unified interface for unsetting a value by property name on an object or by key name on an array, using a
+ * dot-delimited path to navigate a given data structure.
+ *
+ * @param array|object $data The target data structure.
+ * @param string       $path A dot-delimited path.
+ */
+function unsetAt (& $data, $path)
 {
   $paths = $path === '' ? [] : explode ('.', $path);
   $key   = array_pop ($paths);
   $path  = implode ('.', $paths);
-  $v     =& getRefAt ($target, $path);
+  $v     =& getRefAt ($data, $path);
   if (is_array ($v))
     unset ($v[$key]);
   else if (is_object ($v))
