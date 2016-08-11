@@ -142,7 +142,7 @@ function tempdir ($dir, $prefix = '', $mode = 0700)
     $path = $dir . $prefix . mt_rand (0, 9999999);
   } while (!mkdir ($path, $mode));
 
-  return $path;
+  return normalizePath ($path);
 }
 
 /**
@@ -154,6 +154,17 @@ function tempdir ($dir, $prefix = '', $mode = 0700)
  */
 function updir ($path, $times = 1)
 {
+  $path = normalizePath ($path);
   while ($times--) $path = dirname ($path);
   return $path;
+}
+
+/**
+ * Normalizes a filesystem path, converting Windows directory separators to UNIX-compatible forward slashes.
+ * @param string $path
+ * @return string
+ */
+function normalizePath ($path)
+{
+  return str_replace('\\', '/', $path);
 }
