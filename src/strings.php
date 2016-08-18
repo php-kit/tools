@@ -137,15 +137,16 @@ function str_encodeJavasciptStr ($str, $delim = '"')
 /**
  * Converts an hyphenated compound word into a camel-cased form.
  *
- * Ex: `my-long-name => myLongName`
+ * Ex: `my-long-name => myLongName` or `my_long_name => myLongName`
  *
  * @param string $name
- * @param bool   $ucfirst When `true` the first letter is capitalized, otherwhise it is lower cased.
+ * @param bool   $ucfirst   When `true` the first letter is capitalized, otherwhise it is lower cased.
+ * @param string $delimiter [optional] The character that is considered to be the 'hyphen'.
  * @return string
  */
-function dehyphenate ($name, $ucfirst = false)
+function str_dehyphenate ($name, $ucfirst = false, $delimiter = '-')
 {
-  $s = str_replace (' ', '', ucwords (str_replace ('-', ' ', $name)));
+  $s = str_replace ($delimiter, '', ucwords ($name, $delimiter));
   return $ucfirst ? $s : lcfirst ($s);
 }
 
@@ -160,6 +161,32 @@ function str_camelize ($name, $ucfirst = false)
 {
   $s = str_replace (' ', '', ucwords ($name));
   return $ucfirst ? $s : lcfirst ($s);
+}
+
+/**
+ * Converts a string from camel cased form to some symbol-delimited list of words.
+ *
+ * @param string $name
+ * @param bool   $ucwords   [optional] When true, each word is capitalized, otherwise it's "de-capitalized".
+ * @param string $delimiter [optional] Joins words with this symbol. Defaults to space.
+ * @return string
+ */
+function str_decamelize ($name, $ucwords = false, $delimiter = ' ')
+{
+  $w = preg_split ('/(?<!^)(?=[A-Z])|(?<!\d)(?=\d)/', $name);
+  return implode ($delimiter, $ucwords ? array_map ('ucfirst', $w) : array_map ('lcfirst', $w));
+}
+
+/**
+ * Lowercase the first character of each word in a string.
+ *
+ * @param string $str
+ * @param string $delimiter The character used for delimiting words.
+ * @return string
+ */
+function lcwords ($str, $delimiter = ' ')
+{
+  return implode ($delimiter, array_map ('lcfirst', explode ($delimiter, $str)));
 }
 
 function trimText ($text, $maxSize, $marker = ' (...)')
