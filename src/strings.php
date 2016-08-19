@@ -561,3 +561,15 @@ function str_search ($str, $pattern, $from = 0, &$match = null)
   }
   return false;
 }
+
+/**
+ * Performs a simple english pluralization of an "x thing(s)" phrase.
+ *
+ * @param number $num
+ * @param string $thing
+ * @return string
+ */
+function simplePluralize ($num, $thing)
+{
+  return sprintf ('%d %s%s', $num, $thing, $num == 1 ? '' : 's');
+}

@@ -192,3 +192,19 @@ function implementsInterface ($class, $interfaceName)
 {
   return in_array ($interfaceName, class_implements ($class));
 }
+
+/**
+ * Sets the value of a private/protected property of an object of any class, from outside of it.
+ *
+ * <p>Use of this function breaks encapsulation and is a bad practice, use it only as a last resort!
+ *
+ * @param object $obj   Target instance.
+ * @param string $name  Property name.
+ * @param mixed  $value Value to set.
+ */
+function forceSetProperty ($obj, $name, $value)
+{
+  $p = new ReflectionProperty($obj, $name);
+  $p->setAccessible (true);
+  $p->setValue ($obj, $value);
+}

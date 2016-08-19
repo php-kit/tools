@@ -21,6 +21,7 @@ function fn (callable $f)
 }
 
 /**
+ * <p>WARNING: currently this doesn't work!</p>
  * Transforms a callable reference into a closure, with optional pre-bound `$this` and/or prepended arguments.
  *
  * @param callable $fn       A function reference, in the form of:
@@ -40,10 +41,11 @@ function bind (callable $fn, $self = null)
   $args = array_slice (func_get_args (), 2);
   return Closure::bind (function () use ($fn, $self, $args) {
     return call_user_func_array ($fn, $args);
-  }, $self);
+  }, $self, $self);
 }
 
 /**
+ * <p>WARNING: currently this doesn't work!</p>
  * Transforms a callable reference into a closure, with optional pre-bound `$this` and/or appended arguments.
  *
  * @param callable $fn       A function reference, in the form of:
@@ -64,6 +66,29 @@ function bindRight (callable $fn, $self = null)
   return Closure::bind (function () use ($fn, $self, $args) {
     return call_user_func_array ($fn, $args);
   }, $self);
+}
+
+/**
+ * Invokes a method of an object/class, optionally on the context of another class.
+ *
+ * @param callable $ref     A callable reference; either [className,methodName] or [classInstance,methodName].
+ * @param null     $self    [optional] The object on which context the call will be performed (this will set $this in
+ *                          the method).
+ * @param mixed    ...$args Extra arguments to be prepended to `$fn` on each call.
+ * @return mixed The method's return value.
+ */
+function call_method ($ref, $self = null)
+{
+  if (!is_array ($ref) || count($ref) != 2)
+    throw new InvalidArgumentException("Argument must be an array with 2 elements");
+  $args = array_slice (func_get_args (), 2);
+  $m    = new \ReflectionMethod ($ref[0], $ref[1]);
+  if ($m->isStatic ())
+    return $ref (...$args);
+  $f = $m->getClosure ($ref[0]);
+  if ($self)
+    $f = $f->bindTo ($self, $self);
+  return $f(...$args);
 }
 
 /**
