@@ -187,7 +187,9 @@ function array_findAll (array $arr, $fld, $val, $strict = false)
 {
   $out = [];
   if (count ($arr)) {
-    if (is_object ($arr[0])) {
+    reset ($arr);
+    $v = current ($arr);
+    if (is_object ($v)) {
       if ($strict) {
         foreach ($arr as $v)
           if ($v->$fld === $val)
@@ -197,7 +199,7 @@ function array_findAll (array $arr, $fld, $val, $strict = false)
         if ($v->$fld == $val)
           $out[] = $v;
     }
-    if (is_array ($arr[0])) {
+    elseif (is_array ($v)) {
       if ($strict) {
         foreach ($arr as $v)
           if ($v[$fld] === $val)
