@@ -198,7 +198,7 @@ function getRelativePath ($basePath, $targetPath)
 function dirnameEx ($path)
 {
   $path = dirname ($path);
-  return $path == '/' ? '' : $path;
+  return $path == DIRECTORY_SEPARATOR ? '' : $path;
 }
 
 function fileExists ($filename, $useIncludePath = true)
