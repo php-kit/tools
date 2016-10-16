@@ -160,7 +160,7 @@ function enum ($delimiter)
 {
   $args = func_get_args ();
   array_shift ($args);
-  return join ($delimiter, array_prune (array_map ('trim', $args)));
+  return join ($delimiter, array_prune_empty (array_map ('trim', $args)));
 }
 
 /**

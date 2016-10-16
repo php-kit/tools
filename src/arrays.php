@@ -483,7 +483,7 @@ function array_hidrate (array $array, $className)
  *
  * @param array  $a     The source data.
  * @param string $field The field name.
- * @return PowerArray Self, for chaining.
+ * @return array Self, for chaining.
  */
 function array_indexBy (array $a, $field)
 {
@@ -552,33 +552,33 @@ function array_orderBy ()
 }
 
 /**
- * Returns the input array stripped of empty elements (those that are either `null` or empty strings).
+ * Returns the input array stripped of null elements (with strict comparison).
+ *
+ * ><p>**Note:** the resulting array may have sequence gaps on its keys. Use {@see array_values} on it if you want
+ * ordinal sequential keys.
  *
  * @param array $data
  * @return array
  */
 function array_prune (array $data)
 {
-  // This would be more elegant:
-  //   return array_filter ($data, function ($e) { return isset($e) && $e !== ''; });
-  // But this is faster:
-  foreach ($data as $k => $v)
-    if (is_null ($v) || $v === '')
-      unset ($data[$k]);
-  return $data;
+  return array_diff_key ($data, array_flip (array_keys ($data, null, true)));
 }
 
 /**
- * Returns a copy of the input array with a set of **values** excluded from it.
+ * Returns the input array stripped of empty elements (those that are either `null` or empty strings).
  *
- * @param  array $array
- * @param  array $values
+ * ><p>**Note:** `false`, `0` and`'0'` are considered NOT to be empty.
+ * ><p>**Note:** the resulting array may have sequence gaps on its keys. Use {@see array_values} on it if you want
+ * ordinal sequential keys.
+ *
+ * @param array $data
  * @return array
- * @see array_exclude
  */
-function array_discard (array $array, array $values)
+function array_prune_empty (array $data)
 {
-  return array_diff ($array, $values);
+  return array_diff_key ($data,
+    array_flip (array_merge (array_keys ($data, null, true), array_keys ($data, '', true))));
 }
 
 /**
@@ -589,11 +589,11 @@ function array_discard (array $array, array $values)
  * @param array    $data
  * @param string[] $keys
  * @return array
- * @see array_discard
+ * @see array_diff if you want to exclude **values** instead of keys.
  */
 function array_exclude (array $data, array $keys)
 {
-  return array_diff_key ($data, array_fill_keys ($keys, false));
+  return array_diff_key ($data, array_flip ($keys));
 }
 
 /**
@@ -761,14 +761,14 @@ function array_normalizeEmptyValues (array $array, $recursive = false)
 }
 
 /**
- * Creates an array from the given arguments.
+ * **ArrayOf** - Creates an array from the given arguments.
  *
- * <p>This is quite useful when used with the splat operator.<br>
- * Ex: `array_from($a, ...$b)`
+ * <p>This is quite useful when used with the splat/spread operator.<br>
+ * >Ex: `array_from($a, ...$b)`
  *
  * @return array
  */
-function array_from ()
+function aof ()
 {
   return func_get_args ();
 }
