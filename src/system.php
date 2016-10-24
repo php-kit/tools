@@ -14,27 +14,43 @@ function env ($var, $default = '')
 }
 
 /**
- * Runs the specified external command with the specified input data and returns the resulting output.
+ * Determine if the script is not running in the context of a web request; for ex. via the command line (CLI).
  *
- * @param string $cmd       Command line to be executed by the shell.
- * @param string $input     Data for STDIN.
- * @param string $extraPath Additional search path folders to append to the shell's PATH.
- * @param array  $extraEnv  Additional environment variables to append to the shell's environment.
+ * @return bool
+ */
+function isCLI ()
+{
+  return defined ('STDIN') && !isset($_SERVER['REQUEST_METHOD']);
+}
+
+/**
+ * Runs the specified external command with the specified input data or stream and returns the resulting output or
+ * sends it to a stream.
+ *
+ * @param string          $cmd       Command line to be executed by the shell.
+ * @param string|resource $input     Data or a stream of data to send to the subprocess' STDIN.
+ * @param string          $extraPath Additional search path folders to append to the shell's PATH.
+ * @param array           $extraEnv  Additional environment variables to append to the shell's environment.
+ * @param resource        $output    A stream for collecting STDOUT data from the subprocess.
  *
  * @throws RuntimeException STDERR (or STDOUT if STDERR is empty) is available via getMessage().
  * Status code -1 = command not found; other status codes = status returned by command execution.
- * @return string Data from the command's STDOUT.
+ * @return string|null Data from the command's STDOUT if $output is not specified, null otherwise.
  */
-function runCommand ($cmd, $input = '', $extraPath = '', array $extraEnv = null)
+function runExternalCommand ($cmd, $input = '', $extraPath = '', array $extraEnv = null, $output = null)
 {
   $descriptorSpec = [
-    0 => ["pipe", "r"], // stdin is a pipe that the child will read from
-    1 => ["pipe", "w"], // stdout is a pipe that the child will write to
+    0 => is_resource ($input)
+      ? $input
+      : ["pipe", "r"], // stdin is a pipe that the child will read from
+    1 => is_resource ($output)
+      ? $output
+      : ["pipe", "w"], // stdout is a pipe that the child will write to
     2 => ["pipe", "w"] // stderr is a pipe that the child will write to
   ];
 
   if ($extraPath) {
-    $path = $extraPath . PATH_SEPARATOR . $_SERVER['PATH'];
+    $path = $extraPath . PATH_SEPARATOR . array_at ($_SERVER, 'PATH', getenv ('PATH'));
     if (!isset($extraEnv))
       $extraEnv = [];
     $extraEnv['PATH'] = $path;
@@ -50,20 +66,26 @@ function runCommand ($cmd, $input = '', $extraPath = '', array $extraEnv = null)
   $process = proc_open ($cmd, $descriptorSpec, $pipes, null, $env);
 
   if (is_resource ($process)) {
-    fwrite ($pipes[0], $input);
-    fclose ($pipes[0]);
+    $outData = null;
 
-    $output = stream_get_contents ($pipes[1]);
-    fclose ($pipes[1]);
+    if (!is_resource ($input)) {
+      fwrite ($pipes[0], $input);
+      fclose ($pipes[0]);
+    }
+
+    if (!is_resource ($output)) {
+      $outData = stream_get_contents ($pipes[1]);
+      fclose ($pipes[1]);
+    }
 
     $error = stream_get_contents ($pipes[2]);
     fclose ($pipes[2]);
 
     $return_value = proc_close ($process);
     if ($return_value)
-      throw new RuntimeException ($error ?: $output, $return_value);
+      throw new RuntimeException ($error ?: $outData, $return_value);
 
-    return $output;
+    return $outData;
   }
   throw new RuntimeException ($cmd, -1);
 }
@@ -161,10 +183,11 @@ function updir ($path, $times = 1)
 
 /**
  * Normalizes a filesystem path, converting Windows directory separators to UNIX-compatible forward slashes.
+ *
  * @param string $path
  * @return string
  */
 function normalizePath ($path)
 {
-  return str_replace('\\', '/', $path);
+  return str_replace ('\\', '/', $path);
 }

@@ -69,7 +69,8 @@ class PhpCode
     // For compatibility with PHP < 7, the eval MUST be performed outside a static class context!
     $fn = globalEval ($_c = "return function($_vars){return $_exp;};");
     if ($fn) return $fn;
-    throw new RuntimeException ('<h5>Compilation failed</h5><p><p>Syntax error on PHP expression:<p><code>' . self::highlight ($_c) .
+    throw new RuntimeException ('<h5>Compilation failed</h5><p><p>Syntax error on PHP expression:<p><code>' .
+                                self::highlight ($_c) .
                                 '</code>');
   }
 
@@ -109,7 +110,7 @@ class PhpCode
   static function evaluate ($_exp, array $_vars = [])
   {
     extract ($_vars, EXTR_SKIP);
-    return eval("return $_exp;");
+    return eval ("return $_exp;");
   }
 
   /**
@@ -153,8 +154,8 @@ class PhpCode
     if (ctype_space ($_code[0]))
       $_code = ltrim ($_code);
     if (substr ($_code, 0, 5) == '<?php')
-      return eval(substr ($_code, 5));
-    return eval($_code);
+      return eval (substr ($_code, 5));
+    return eval ($_code);
   }
 
   /**
@@ -175,8 +176,8 @@ class PhpCode
     if ($b)
       return false; // Unbalanced braces would break the eval below
     ob_start (); // Catch potential parse error messages
-    $code = eval('if(0){' . $code . '}'); // Put $code in a dead code sandbox to prevent its execution
-    if ($output != 0)
+    $code = eval ('if(0){' . $code . '}'); // Put $code in a dead code sandbox to prevent its execution
+    if (func_num_args() > 1)
       $output = ob_get_clean ();
     else
       ob_end_clean ();

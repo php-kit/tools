@@ -1,5 +1,30 @@
 <?php
 
+/**
+ * Hybrid sprintf.
+ * Formats a message with or without HTML formatting, depending on whether the script is running on the CLI or not.
+ *
+ * @param string $webFormat HTML-formatted text with sprintf-compatible placeholders.
+ * @param string $cliFormat unformatted text with sprintf-compatible placeholders.
+ * @param mixed  ...$val    Values for each of the placeholders.
+ * @return string
+ */
+function hsprintf ($webFormat, $cliFormat, ...$val)
+{
+  return sprintf (isCLI () ? $cliFormat : $webFormat, ...$val);
+}
+
+/**
+ * Returns an Horiontal Rule comprised of the specified character pattern, with the same size as the terminal width.
+ *
+ * @param string $char
+ * @return string
+ */
+function hr ($char)
+{
+  return str_repeat ($char, intval (`tput cols`));
+}
+
 function json_save ($path, $data, $pretty = true)
 {
   $json = json_encode ($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | ($pretty ? JSON_PRETTY_PRINT : 0));
@@ -89,7 +114,7 @@ function is_symlink ($target)
  */
 function symlink_target ($path)
 {
-  $path   = strtr ($path, '\\', '/');
+  $path     = strtr ($path, '\\', '/');
   $realpath = strtr (realpath ($path), '\\', '/');
 
   if ($realpath !== $path) // it is a symlink
