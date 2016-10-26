@@ -103,7 +103,7 @@ function object_propNames ($o)
 }
 
 /**
- * Copies properties from a source object (or array) into a given object.
+ * Merges properties from a source object (or array) into a given object.
  *
  * @param object       $target
  * @param object|array $src
@@ -114,8 +114,10 @@ function extend ($target, $src)
 {
   if (isset($src)) {
     if (is_object ($target)) {
-      foreach ($src as $k => $v)
-        $target->$k = $v;
+      foreach ($src as $k => $v) // iterates both objects and arrays
+        if (isset($target->$k) && is_object ($target->$k))
+          extend ($target->$k, $v);
+        else $target->$k = $v;
     }
     else throw new InvalidArgumentException('Invalid target for ' . __FUNCTION__);
   }
