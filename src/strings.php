@@ -573,3 +573,16 @@ function simplePluralize ($num, $thing)
 {
   return sprintf ('%d %s%s', $num, $thing, $num == 1 ? '' : 's');
 }
+
+/**
+ * Indents a (possibly multiline) string.
+ *
+ * @param string $str
+ * @param int    $level  The indentation level.
+ * @param string $indent A pattern to be output at the start of each line, repeated $level times.
+ * @return string
+ */
+function str_indent ($str, $level = 1, $indent = '  ')
+{
+  return preg_replace ('/^/m', str_repeat ($indent, $level), $str);
+}

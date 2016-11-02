@@ -1,6 +1,31 @@
 <?php
 
 /**
+ * For use with {@see color()}.
+ */
+const TERMINAL_COLORS = [
+  'standout'    => ['smso', 'rmso'],
+  'bold'        => ['bold', 'sgr0'],
+  'underline'   => ['smul', 'rmul'],
+  'black'       => ['setaf 0', 'sgr0'],
+  'dark red'    => ['setaf 1', 'sgr0'],
+  'dark green'  => ['setaf 2', 'sgr0'],
+  'dark yellow' => ['setaf 3', 'sgr0'],
+  'dark blue'   => ['setaf 4', 'sgr0'],
+  'dark purple' => ['setaf 5', 'sgr0'],
+  'dark cyan'   => ['setaf 6', 'sgr0'],
+  'grey'        => ['setaf 7', 'sgr0'],
+  'dark grey'   => ['setaf 8', 'sgr0'],
+  'red'         => ['setaf 9', 'sgr0'],
+  'green'       => ['setaf 10', 'sgr0'],
+  'yellow'      => ['setaf 11', 'sgr0'],
+  'blue'        => ['setaf 12', 'sgr0'],
+  'purple'      => ['setaf 13', 'sgr0'],
+  'cyan'        => ['setaf 14', 'sgr0'],
+  'white'       => ['setaf 15', 'sgr0'],
+];
+
+/**
  * Hybrid sprintf.
  * Formats a message with or without HTML formatting, depending on whether the script is running on the CLI or not.
  *
@@ -278,6 +303,13 @@ function dirnameEx ($path, $levels = 1)
   return $path == DIRECTORY_SEPARATOR ? '' : $path;
 }
 
+/**
+ * Enhanced version of {@see file_exists()} that is able to search for a file on PHP's include path.
+ *
+ * @param string $filename
+ * @param bool   $useIncludePath
+ * @return bool
+ */
 function fileExists ($filename, $useIncludePath = true)
 {
   return $useIncludePath ? boolval (stream_resolve_include_path ($filename)) : file_exists ($filename);
@@ -312,9 +344,62 @@ function loadFile ($filename, $useIncludePath = true)
   return removeBOM (file_get_contents ($filename));
 }
 
+/**
+ * Removes the Unicode Byte Order Mark for the beginning of a string, if it is present there.
+ *
+ * @param $string
+ * @return string
+ */
 function removeBOM ($string)
 {
   if (substr ($string, 0, 3) == pack ('CCC', 0xef, 0xbb, 0xbf))
     $string = substr ($string, 3);
   return $string;
+}
+
+/**
+ * Checks if STDOUT is being redirected.
+ *
+ * ><p>**Note:** if it is, text formatting is not possible.
+ *
+ * @return bool
+ */
+function stdoutIsRedirected ()
+{
+  return !isCLI () || !stream_get_meta_data (STDOUT)['seekable'];
+}
+
+/**
+ * Runs the `tput` command (if available) for controlling the terminal.
+ *
+ * @param string $s tput command argument.
+ * @return string The output from the tput program or an empty string if tput is not available.
+ */
+function tput ($s)
+{
+  static $available = null;
+  if (is_null ($available))
+    $available = command_exists ('tput') && `tput colors` > 8 && !stdoutIsRedirected ();
+  return $available ? `tput $s` : '';
+}
+
+/**
+ * Returns a text message formatted with a color/style for terminal output.
+ *
+ * <p>The formatted text restores the previous color at the end of the message.
+ *
+ * <p>If the terminal does not support color or if not running on the CLI, the input text is returned unaltered.
+ *
+ * @param string $color One of the {@see TERMINAL_COLORS} array keys.
+ * @param string $msg   The message to format.
+ * @return string The formatted text.
+ */
+function color ($color, $msg)
+{
+  $c = get (TERMINAL_COLORS, $color);
+  if (!$c)
+    throw new InvalidArgumentException("Invalid color name: $color");
+  $begin = tput ($c[0]);
+  $end   = tput ($c[1]);
+  return "$begin{$msg}$end";
 }

@@ -24,6 +24,18 @@ function isCLI ()
 }
 
 /**
+ * Determines if a command exists on the current operating system.
+ *
+ * @param string $command The command to check
+ * @return bool True if the command has been found, false otherwise.
+ */
+function command_exists ($command)
+{
+  $where = (PHP_OS == 'WINNT') ? 'where' : 'which';
+  return !!`$where $command`;
+}
+
+/**
  * Runs the specified external command with the specified input data or stream and returns the resulting output or
  * sends it to a stream.
  *
