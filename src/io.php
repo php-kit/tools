@@ -220,9 +220,61 @@ function getRelativePath ($basePath, $targetPath)
     ? "./$path" : $path;
 }
 
-function dirnameEx ($path)
+/**
+ * Creates a temporary directory.
+ *
+ * @param        $dir
+ * @param string $prefix
+ * @param int    $mode
+ *
+ * @return string
+ */
+function tempdir ($dir, $prefix = '', $mode = 0700)
 {
-  $path = dirname ($path);
+  if (substr ($dir, -1) != '/') $dir .= '/';
+  do {
+    $path = $dir . $prefix . mt_rand (0, 9999999);
+  } while (!mkdir ($path, $mode));
+
+  return normalizePath ($path);
+}
+
+/**
+ * Normalizes a filesystem path, converting Windows directory separators to UNIX-compatible forward slashes.
+ *
+ * @param string $path
+ * @return string
+ */
+function normalizePath ($path)
+{
+  return str_replace ('\\', '/', $path);
+}
+
+/**
+ * Returns an ancestor directory of the given directory, `n` levels above.
+ *
+ * @param string $path   The starting path.
+ * @param int    $levels How many times to travel up the directory hierarchy.
+ * @return string The resulting path.
+ */
+function updir ($path, $levels = 1)
+{
+  if (PHP_MAJOR_VERSION >= 7)
+    return dirname ($path, $levels);
+  while ($levels--) $path = dirname ($path);
+  return $path;
+}
+
+/**
+ * Similar to {@see updir}, but it returns an empty string if `$path` is already at the root level.
+ *
+ * @param string $path   The starting path.
+ * @param int    $levels How many times to travel up the directory hierarchy.
+ * @return string The resulting path.
+ */
+function dirnameEx ($path, $levels = 1)
+{
+  $path = updir ($path, $levels);
   return $path == DIRECTORY_SEPARATOR ? '' : $path;
 }
 
