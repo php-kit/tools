@@ -246,6 +246,30 @@ function getRelativePath ($basePath, $targetPath)
 }
 
 /**
+ * Strips the base path from the given absolute path if it is a subdirectory of that base path.
+ * Otherwise, it returns the given path unmodified.
+ *
+ * ><p>**Note:** this supports mixed Windows/Unix file paths.
+ *
+ * @param string $base An absolute path.
+ * @param string $path An absolute path.
+ * @return string
+ */
+function getRelativePathIfSubpath ($base, $path)
+{
+  if ($path) {
+    $path = normalizePath ($path);
+    // Check if it's an absolute path
+    if ($path[0] == DIRECTORY_SEPARATOR || $path[1] == ':' /* ex: C:\windows-path */) {
+      $l = strlen ($base);
+      if (substr ($path, 0, $l) == $base)
+        return substr ($path, $l + 1);
+    }
+  }
+  return $path;
+}
+
+/**
  * Creates a temporary directory.
  *
  * @param        $dir
