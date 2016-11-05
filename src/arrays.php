@@ -668,33 +668,35 @@ function map ($src, callable $fn, $useKeys = true)
 /**
  * Filters an array or a {@see Traversable} sequence by calling a callback.
  *
- * The function will receive a value and a key for each array element and it should return `true` if the element will be
+ * The function will receive a value and a key for each array element and it should return `true` if the element will
+ * be
  * kept on the resulting array, `false` to drop it.
  *
  * Unlike array_filter, the original keys will be preserved, unless the callback defines the
  * key parameter as a reference and modifies it.
  *
- * @param array|Traversable $src Anything that can be iterated on a `foreach` loop.
- *                               If `null`, `null` is returned.
- * @param callable          $fn  The callback.
+ * @param array|Traversable $src       Anything that can be iterated on a `foreach` loop.
+ *                                     If `null`, `null` is returned.
+ * @param callable          $fn        The callback.
+ * @param bool              $resetKeys When true, the resulting keys will be regenerated as a monotonic increasing
+ *                                     sequence.
  * @return array
- * @throws InvalidArgumentException If `$src` is not iterable.
  */
-function filter ($src, callable $fn)
+function filter ($src, callable $fn, $resetKeys = false)
 {
   if (isset($src)) {
     if (is_array ($src))
-      return array_filter ($src, $fn, ARRAY_FILTER_USE_BOTH);
-    if ($src instanceof Traversable) {
+      $o = array_filter ($src, $fn, ARRAY_FILTER_USE_BOTH);
+    elseif ($src instanceof Traversable) {
       $o = [];
       foreach ($src as $k => $v)
         if ($fn ($v, $k))
           $o[$k] = $v;
-      return $o;
     }
-    throw new InvalidArgumentException;
+    else throw new InvalidArgumentException;
   }
-  return $src;
+  else return $src;
+  return $resetKeys ? array_values($o) : $o;
 }
 
 /**

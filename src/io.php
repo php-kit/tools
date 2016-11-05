@@ -420,10 +420,16 @@ function tput ($s)
  */
 function color ($color, $msg)
 {
-  $c = get (TERMINAL_COLORS, $color);
-  if (!$c)
-    throw new InvalidArgumentException("Invalid color name: $color");
-  $begin = tput ($c[0]);
-  $end   = tput ($c[1]);
+  static $cache = [];
+  if (isset ($cache[$color]))
+    list ($begin, $end) = $cache[$color];
+  else {
+    $c = get (TERMINAL_COLORS, $color);
+    if (!$c)
+      throw new InvalidArgumentException("Invalid color name: $color");
+    $begin         = tput ($c[0]);
+    $end           = tput ($c[1]);
+    $cache[$color] = [$begin, $end];
+  }
   return "$begin{$msg}$end";
 }
