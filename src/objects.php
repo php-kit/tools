@@ -105,6 +105,10 @@ function object_propNames ($o)
 /**
  * Merges properties from a source object (or array) into a given object.
  *
+ * Assignements are recursive.
+ * If the target property is an object implementing ArrayAccess, the assignement is performed via [], otherwise it's
+ * performed via ->.
+ *
  * @param object       $target
  * @param object|array $src
  *
@@ -117,6 +121,8 @@ function extend ($target, $src)
       foreach ($src as $k => $v) // iterates both objects and arrays
         if (isset($target->$k) && is_object ($target->$k))
           extend ($target->$k, $v);
+        else if ($target instanceof ArrayAccess)
+          $target[$k] = $v;
         else $target->$k = $v;
     }
     else throw new InvalidArgumentException('Invalid target for ' . __FUNCTION__);
