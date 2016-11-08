@@ -119,10 +119,11 @@ function extend ($target, $src)
   if (isset($src)) {
     if (is_object ($target)) {
       foreach ($src as $k => $v) // iterates both objects and arrays
-        if (isset($target->$k) && is_object ($target->$k))
-          extend ($target->$k, $v);
-        else if ($target instanceof ArrayAccess)
-          $target[$k] = $v;
+        if (isset($target->$k) && is_object ($target->$k)) {
+          if ($target instanceof ArrayAccess)
+            $target[$k] = $v;
+          else extend ($target->$k, $v);
+        }
         else $target->$k = $v;
     }
     else throw new InvalidArgumentException('Invalid target for ' . __FUNCTION__);
