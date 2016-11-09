@@ -202,30 +202,3 @@ function shortTypeOf ($x)
   }
   return gettype ($x);
 }
-
-/**
- * If the argument is an object, this returns a formatted HTML span showing its class name without the namespace part,
- * but it also includes the namespace via a tooltip.
- * Other argument types are converted the same way {@see typeOf()} does, but enclosed within a `kbd` tag.
- *
- * @param mixed $x
- * @return string
- */
-function typeInfoOf ($x)
-{
-  return is_object ($x) ? formatClassName (get_class ($x)) : '<span class=__type>' . typeOf ($x) . '</span>';
-}
-
-/**
- * Returns a formatted HTML span showing the given class name without the namespace part, but it also including the
- * namespace via a tooltip.
- *
- * @param string $name
- * @return string
- */
-function formatClassName ($name)
-{
-  $n = explode ('\\', $name);
-  $c = array_pop ($n);
-  return sprintf ("<span class=__type title='%s'>%s</span>", $name, $c);
-}
