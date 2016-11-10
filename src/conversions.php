@@ -110,10 +110,10 @@ function friendlySize ($size, $precision = 0)
  * Converts the argument into an iterator, if possible, otherwise it throws an exception.
  *
  * @param mixed $t An iterable value or null. If null, an empty iterator is returned.
- * @return Iterator
- * @throws InvalidArgumentException
+ * @param bool  $throwOnError If false, the function returns false.
+ * @return Iterator|false
  */
-function iteratorOf ($t)
+function iteratorOf ($t, $throwOnError = true)
 {
   if (is_array ($t))
     return new ArrayIterator ($t);
@@ -125,6 +125,8 @@ function iteratorOf ($t)
   }
   if (is_null ($t))
     return new EmptyIterator;
-  throw new InvalidArgumentException("Value is not iterable");
+  if ($throwOnError)
+    throw new InvalidArgumentException("Value is not iterable");
+  return false;
 }
 
