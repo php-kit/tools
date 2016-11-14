@@ -1,5 +1,96 @@
 <?php
 
+if (!function_exists ('mb_chr')) {
+  /**
+   * Polyfill for the mb_chr function.
+   *
+   * @param int    $ord
+   * @param string $encoding
+   * @return string
+   */
+  function mb_chr ($ord, $encoding = 'UTF-8')
+  {
+    if ($encoding === 'UCS-4BE') {
+      return pack ("N", $ord);
+    }
+    else {
+      return mb_convert_encoding (mb_chr ($ord, 'UCS-4BE'), $encoding, 'UCS-4BE');
+    }
+  }
+}
+
+if (!function_exists ('mb_ord')) {
+  /**
+   * Polyfill for the mb_ord function.
+   *
+   * @param string $char
+   * @param string $encoding
+   * @return int
+   */
+  function mb_ord ($char, $encoding = 'UTF-8')
+  {
+    if ($encoding === 'UCS-4BE') {
+      list(, $ord) = (strlen ($char) === 4) ? @unpack ('N', $char) : @unpack ('n', $char);
+
+      return $ord;
+    }
+    else {
+      return mb_ord (mb_convert_encoding ($char, 'UCS-4BE', $encoding), 'UCS-4BE');
+    }
+  }
+}
+
+if (!function_exists ('mb_str_pad')) {
+  /**
+   * Pads an unicode string to a certain length with another string.
+   *
+   * <p>Note: this provides the mb_str_pad that is missing from the mbstring module.
+   *
+   * @param string $str
+   * @param int    $pad_len
+   * @param string $pad_str
+   * @param int    $dir
+   * @param string $encoding
+   *
+   * @return null|string
+   */
+  function mb_str_pad ($str, $pad_len, $pad_str = ' ', $dir = STR_PAD_RIGHT, $encoding = 'UTF-8')
+  {
+    mb_internal_encoding ($encoding);
+    $str_len     = mb_strlen ($str);
+    $pad_str_len = mb_strlen ($pad_str);
+    if (!$str_len && ($dir == STR_PAD_RIGHT || $dir == STR_PAD_LEFT)) {
+      $str_len = 1; // @debug
+    }
+    if (!$pad_len || !$pad_str_len || $pad_len <= $str_len) {
+      return $str;
+    }
+
+    $result = null;
+    if ($dir == STR_PAD_BOTH) {
+      $length = ($pad_len - $str_len) / 2;
+      $repeat = ceil ($length / $pad_str_len);
+      $result = mb_substr (str_repeat ($pad_str, $repeat), 0, floor ($length))
+                . $str
+                . mb_substr (str_repeat ($pad_str, $repeat), 0, ceil ($length));
+    }
+    else {
+      $repeat = ceil ($str_len - $pad_str_len + $pad_len);
+      if ($dir == STR_PAD_RIGHT) {
+        $result = $str . str_repeat ($pad_str, $repeat);
+        $result = mb_substr ($result, 0, $pad_len);
+      }
+      else if ($dir == STR_PAD_LEFT) {
+        $result = str_repeat ($pad_str, $repeat);
+        $result =
+          mb_substr ($result, 0, $pad_len - (($str_len - $pad_str_len) + $pad_str_len)) . $str;
+      }
+    }
+
+    return $result;
+  }
+}
+
 /**
  * Checks if a string begins with a given substring.
  *
@@ -65,54 +156,6 @@ function str_cut ($text, $limit, $more = '...')
   }
 
   return $text;
-}
-
-/**
- * Pads an unicode string to a certain length with another string.
- * Note: this provides the mb_str_pad that is missing from the mbstring module.
- *
- * @param string $str
- * @param int    $pad_len
- * @param string $pad_str
- * @param int    $dir
- * @param string $encoding
- *
- * @return null|string
- */
-function mb_str_pad ($str, $pad_len, $pad_str = ' ', $dir = STR_PAD_RIGHT, $encoding = 'UTF-8')
-{
-  mb_internal_encoding ($encoding);
-  $str_len     = mb_strlen ($str);
-  $pad_str_len = mb_strlen ($pad_str);
-  if (!$str_len && ($dir == STR_PAD_RIGHT || $dir == STR_PAD_LEFT)) {
-    $str_len = 1; // @debug
-  }
-  if (!$pad_len || !$pad_str_len || $pad_len <= $str_len) {
-    return $str;
-  }
-
-  $result = null;
-  if ($dir == STR_PAD_BOTH) {
-    $length = ($pad_len - $str_len) / 2;
-    $repeat = ceil ($length / $pad_str_len);
-    $result = mb_substr (str_repeat ($pad_str, $repeat), 0, floor ($length))
-              . $str
-              . mb_substr (str_repeat ($pad_str, $repeat), 0, ceil ($length));
-  }
-  else {
-    $repeat = ceil ($str_len - $pad_str_len + $pad_len);
-    if ($dir == STR_PAD_RIGHT) {
-      $result = $str . str_repeat ($pad_str, $repeat);
-      $result = mb_substr ($result, 0, $pad_len);
-    }
-    else if ($dir == STR_PAD_LEFT) {
-      $result = str_repeat ($pad_str, $repeat);
-      $result =
-        mb_substr ($result, 0, $pad_len - (($str_len - $pad_str_len) + $pad_str_len)) . $str;
-    }
-  }
-
-  return $result;
 }
 
 /**
@@ -313,28 +356,6 @@ function taggedStrCrop ($str, $width, $marker = '')
 function taggedStrLen ($str)
 {
   return mb_strlen (preg_replace ('/<[^>]*>/u', '', $str));
-}
-
-function mb_chr ($ord, $encoding = 'UTF-8')
-{
-  if ($encoding === 'UCS-4BE') {
-    return pack ("N", $ord);
-  }
-  else {
-    return mb_convert_encoding (mb_chr ($ord, 'UCS-4BE'), $encoding, 'UCS-4BE');
-  }
-}
-
-function mb_ord ($char, $encoding = 'UTF-8')
-{
-  if ($encoding === 'UCS-4BE') {
-    list(, $ord) = (strlen ($char) === 4) ? @unpack ('N', $char) : @unpack ('n', $char);
-
-    return $ord;
-  }
-  else {
-    return mb_ord (mb_convert_encoding ($char, 'UCS-4BE', $encoding), 'UCS-4BE');
-  }
 }
 
 /**
