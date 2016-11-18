@@ -31,12 +31,13 @@ const TERMINAL_COLORS = [
  *
  * @param string $webFormat HTML-formatted text with sprintf-compatible placeholders.
  * @param string $cliFormat unformatted text with sprintf-compatible placeholders.
- * @param mixed  ...$val    Values for each of the placeholders.
+ * @param mixed  ...$args   Values for each of the placeholders.
  * @return string
  */
-function hsprintf ($webFormat, $cliFormat, ...$val)
+function hsprintf ($webFormat, $cliFormat)
 {
-  return sprintf (isCLI () ? $cliFormat : $webFormat, ...$val);
+  $args = array_slice (func_get_args (), 2);
+  return call_user_func_array ('sprintf', array_merge ([isCLI () ? $cliFormat : $webFormat], $args));
 }
 
 /**

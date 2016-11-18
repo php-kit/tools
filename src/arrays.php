@@ -666,6 +666,37 @@ function map ($src, callable $fn, $useKeys = true)
 }
 
 /**
+ * Generates a new array where each item is an array consisting of the values from all specified arrays at the same
+ * index.
+ *
+ * <p>The arrays are assumed to be indexed, not associative. The resulting array is indexed.
+ *
+ * #### Example
+ * ```
+ * $a = array(1, 2, 3, 4, 5);
+ * $b = array("one", "two", "three");
+ * $c = array("uno", "dos", "tres");
+ *
+ * $d = array_combine_values ($a, $b, $c);
+ * ```
+ * ##### Yields
+ * ```
+ * [
+ *   [1, "one",   "uno"],
+ *   [2, "two",   "dos"],
+ *   [3, "three", "tres"],
+ * ]
+ * ```
+ *
+ * @param array ...$args
+ * @return array
+ */
+function array_combine_values ()
+{
+  return array_map (null, func_get_args ());
+}
+
+/**
  * Filters an array or a {@see Traversable} sequence by calling a callback.
  *
  * The function will receive a value and a key for each array element and it should return `true` if the element will

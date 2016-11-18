@@ -79,16 +79,16 @@ function bindRight (callable $fn, $self = null)
  */
 function call_method ($ref, $self = null)
 {
-  if (!is_array ($ref) || count($ref) != 2)
+  if (!is_array ($ref) || count ($ref) != 2)
     throw new InvalidArgumentException("Argument must be an array with 2 elements");
   $args = array_slice (func_get_args (), 2);
   $m    = new \ReflectionMethod ($ref[0], $ref[1]);
   if ($m->isStatic ())
-    return $ref (...$args);
+    return call_user_func_array ($ref, $args);
   $f = $m->getClosure ($ref[0]);
   if ($self)
     $f = $f->bindTo ($self, $self);
-  return $f(...$args);
+  return call_user_func_array ($f, $args);
 }
 
 /**
