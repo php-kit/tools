@@ -202,3 +202,16 @@ function shortTypeOf ($x)
   }
   return gettype ($x);
 }
+
+if (!function_exists('is_iterable')) {
+  /**
+   * Detects if the argument is traversable using `foreach`.
+   *
+   * @param $x
+   * @return bool
+   */
+  function is_iterable ($x)
+  {
+    return $x instanceof Traversable || is_array ($x);
+  }
+}

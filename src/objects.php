@@ -103,30 +103,110 @@ function object_propNames ($o)
 }
 
 /**
- * Merges properties from a source object (or array) into a given object.
+ * Merges properties from a source object (or array) into a target object.
  *
- * Assignements are recursive.
- * If the target property is an object implementing ArrayAccess, the assignement is performed via [], otherwise it's
- * performed via ->.
+ * <p>Assignments are recursive.
+ * <p>If the target property is an object implementing ArrayAccess, the assignment is performed via `[]`, otherwise it's
+ * performed via `->`.
  *
  * @param object       $target
  * @param object|array $src
- *
- * @throws Exception
+ * @throws InvalidArgumentException If any of the arguments is not of one of the expected types.
  */
 function extend ($target, $src)
 {
+  $c = $target instanceof ArrayAccess;
   if (isset($src)) {
-    if (is_object ($target)) {
-      foreach ($src as $k => $v) // iterates both objects and arrays
-        if (isset($target->$k) && is_object ($target->$k)) {
-          if ($target instanceof ArrayAccess)
-            $target[$k] = $v;
-          else extend ($target->$k, $v);
-        }
-        else $target->$k = $v;
+    if (is_iterable ($src)) {
+      if (is_object ($target)) {
+        foreach ($src as $k => $v) // iterates both objects and arrays
+          if (isset($target->$k) && (is_array ($v) || is_object ($v))) {
+            if (is_object ($target->$k))
+              extend ($target->$k, $v);
+            elseif (is_array ($target->$k))
+              array_recursiveMergeInto ($target->$k, $v);
+            elseif ($c) $target[$k] = $v;
+            else $target->$k = $v;
+          }
+          elseif ($c) $target[$k] = $v;
+          else $target->$k = $v;
+      }
+      else throw new InvalidArgumentException('Invalid target argument');
     }
-    else throw new InvalidArgumentException('Invalid target for ' . __FUNCTION__);
+    else throw new InvalidArgumentException('Invalid source argument');
+  }
+}
+
+/**
+ * Copies non-empty properties from a source object (or array) into a target object, but only those existing already on
+ * that target.
+ *
+ * <p>Assignments are not recursive.
+ * <p>If the target property is an object implementing ArrayAccess, the assignment is performed via `[]`, otherwise it's
+ * performed via `->`.
+ *
+ * ><p>**Note:** empty properties are those containing null or an empty string.
+ *
+ * @param object|ArrayAccess            $target
+ * @param object|array|Traversable|null $src If NULL, nothing happens.
+ * @throws InvalidArgumentException If any of the arguments is not of one of the expected types.
+ */
+function mergeExisting ($target, $src)
+{
+  if (isset($src)) {
+    if (is_iterable ($src)) {
+      if (is_object ($target)) {
+        if ($target instanceof ArrayAccess) {
+          foreach ($src as $k => $v) {
+            if ($target->offsetExists ($k))
+              $target[$k] = $v;
+          }
+        }
+        else foreach ($src as $k => $v)
+          if (property_exists ($target, $k))
+            $target->$k = $v;
+      }
+      else throw new InvalidArgumentException('Invalid target argument');
+    }
+    else throw new InvalidArgumentException('Invalid source argument');
+  }
+}
+
+
+/**
+ * Copies values from a source object (or array) into a target object, but only those whose keys are present on the
+ * given list of allowed properties.
+ *
+ * <p>Assignments are not recursive.
+ * <p>If the target property is an object implementing ArrayAccess, the assignment is performed via `[]`, otherwise
+ * it's performed via `->`.
+ *
+ * ><p>**Note:** empty properties are those containing null or an empty string.
+ *
+ * @param object|ArrayAccess            $target
+ * @param object|array|Traversable|null $src  If NULL, nothing happens.
+ * @param array                         $only A List of property names.
+ * @throws InvalidArgumentException If any of the arguments is not of one of the expected types.
+ */
+function mergeOnly ($target, $src, array $only)
+{
+  if (isset($src)) {
+    if (is_iterable ($src)) {
+      if (is_object ($target)) {
+        $keys = array_flip ($only);
+        if ($target instanceof ArrayAccess) {
+          foreach ($src as $k => $v) {
+            if (isset ($keys[$k]) && $target->offsetExists ($k))
+              $target[$k] = $v;
+          }
+        }
+        else foreach ($src as $k => $v)
+          if (isset ($keys[$k]) && property_exists ($target, $k))
+            $target->$k = $v;
+      }
+      else throw new InvalidArgumentException('Invalid target argument');
+    }
+    else throw new InvalidArgumentException('Invalid source argument');
   }
 }
 
@@ -146,31 +226,6 @@ function defaults ($target, $src)
       foreach ($src as $k => $v)
         if (!exists ($target->$k))
           $target->$k = $v;
-    }
-    else throw new InvalidArgumentException('Invalid target for ' . __FUNCTION__);
-  }
-}
-
-/**
- * Copies non-empty properties from a source object (or array) into a given object.
- * > **Note:** empty properties are those containing null or an empty string.
- * > **Note:** if the object supports ArrayAccess, that interface will also be used for checking and assignment.
- *
- * @param object|ArrayAccess       $target
- * @param object|array|Traversable $src
- *
- * @throws Exception
- */
-function extendExisting ($target, $src)
-{
-  $c = $target instanceof ArrayAccess;
-  if (isset($src)) {
-    if (is_object ($target)) {
-      foreach ($src as $k => $v)
-        if (property_exists ($target, $k))
-          $target->$k = $v;
-        else if ($c && $target->offsetExists ($k))
-          $target[$k] = $v;
     }
     else throw new InvalidArgumentException('Invalid target for ' . __FUNCTION__);
   }

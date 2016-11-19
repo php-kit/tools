@@ -35,8 +35,8 @@ function array_binarySearch (array $array, $what, &$probe, $comparator)
 /**
  * Merges an array to the target array, modifying the original.
  *
- * @param array $a
- * @param array $b
+ * @param array $a Target being modified.
+ * @param array $b Source data.
  */
 function array_mergeInto (array &$a, array $b)
 {
@@ -47,8 +47,8 @@ function array_mergeInto (array &$a, array $b)
  * Merges an array or an object to the target array, modifying the original, recursively.
  * It supports nested object properties.
  *
- * @param array        $a
- * @param array|object $b
+ * @param array                    $a Target being modified.
+ * @param array|object|Traversable $b Source data.
  */
 function array_recursiveMergeInto (array &$a, $b)
 {
@@ -70,13 +70,29 @@ function array_recursiveMergeInto (array &$a, $b)
  * Merges an array, object or iterable to the target array, modifying the original, but only for keys already existing
  * on the target.
  *
- * @param array                    $array
- * @param array|object|Traversable $data
+ * @param array                    $array Target being modified.
+ * @param array|object|Traversable $data  Source data.
  */
 function array_mergeExisting (array &$array, $data)
 {
   foreach ($data as $k => $v)
     if (array_key_exists ($k, $array))
+      $array[$k] = $v;
+}
+
+/**
+ * Merges an array, object or iterable to the target array, modifying the original, but only for keys already existing
+ * on the target.
+ *
+ * @param array                    $array Target being modified.
+ * @param array|object|Traversable $data  Source data.
+ * @param array                    $only  A List of key names.
+ */
+function array_mergeOnly (array &$array, $data, array $only)
+{
+  $keys = array_flip ($only);
+  foreach ($data as $k => $v)
+    if (isset ($keys[$k]) && array_key_exists ($k, $array))
       $array[$k] = $v;
 }
 
@@ -727,7 +743,7 @@ function filter ($src, callable $fn, $resetKeys = false)
     else throw new InvalidArgumentException;
   }
   else return $src;
-  return $resetKeys ? array_values($o) : $o;
+  return $resetKeys ? array_values ($o) : $o;
 }
 
 /**
