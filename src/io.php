@@ -68,7 +68,11 @@ function json_load ($path, $assoc = false)
 /**
  * Removes a directory recursively.
  *
+ * <p>Even if it fails because some file or subdirectory couldn't be removed, it still tries to delete as much as
+ * possible.
+ *
  * @param string $dir path.
+ * @return bool FALSE if any file or subdirectory failed being removed.
  */
 function rrmdir ($dir)
 {
@@ -76,34 +80,38 @@ function rrmdir ($dir)
     if (is_symlink ($dir)) {
       $target = symlink_target ($dir);
       if (is_dir ($target))
-        rmdir ($dir);
+        return rmdir ($dir);
       else
-        unlink ($dir);
+        return unlink ($dir);
     }
     else if (is_dir ($dir)) {
+      $o       = true;
       foreach (scandir ($dir) as $subdir) {
         if ($subdir == "." || $subdir == "..")
           continue;
-        rrmdir ($dir . "/" . $subdir);
+        $o = $o && rrmdir ($dir . "/" . $subdir);
       }
-      rmdir ($dir);
+      if ($o)
+        $o = $o && rmdir ($dir);
+      return $o;
     }
-    else {
-      unlink ($dir);
-    }
+    else return unlink ($dir);
   }
   else {
     if (is_dir ($dir)) {
       $objects = scandir ($dir);
+      $o       = true;
       foreach ($objects as $object) {
         if ($object != "." && $object != "..") {
           if (filetype ($dir . "/" . $object) == "dir")
-            rrmdir ($dir . "/" . $object);
-          else unlink ($dir . "/" . $object);
+            $o = $o && rrmdir ($dir . "/" . $object);
+          else $o = $o && unlink ($dir . "/" . $object);
         }
       }
       reset ($objects);
-      rmdir ($dir);
+      if ($o)
+        $o = $o && rmdir ($dir);
+      return $o;
     }
   }
 }

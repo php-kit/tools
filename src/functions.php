@@ -21,8 +21,9 @@ function fn (callable $f)
 }
 
 /**
- * <p>WARNING: currently this doesn't work!</p>
- * Transforms a callable reference into a closure, with optional pre-bound `$this` and/or prepended arguments.
+ * Transforms a callable reference into a closure, with optional pre-bound arguments.
+ *
+ * <p>If you want to preserve `$this` on the called function, you can use the [$this, 'method'] syntax.
  *
  * @param callable $fn       A function reference, in the form of:
  *                           <ul>
@@ -32,21 +33,22 @@ function fn (callable $f)
  *                           <li> an array of (className,methodName).
  *                           <li> an array of (classInstance,methodName).
  *                           </ul>
- * @param mixed    $self     The value of `$this` inside `$fn` (an object).
- * @param mixed    ...$args  Extra arguments to be prepended to `$fn` on each call.
+ * @param mixed    ...$args  The call's fixed arguments.
  * @return Closure
  */
-function bind (callable $fn, $self = null)
+function bind (callable $fn)
 {
-  $args = array_slice (func_get_args (), 2);
-  return Closure::bind (function () use ($fn, $self, $args) {
+  $args = array_slice (func_get_args (), 1);
+  return function () use ($fn, $args) {
     return call_user_func_array ($fn, $args);
-  }, $self, $self);
+  };
 }
 
 /**
- * <p>WARNING: currently this doesn't work!</p>
- * Transforms a callable reference into a closure, with optional pre-bound `$this` and/or appended arguments.
+ * Transforms a callable reference into a closure, with optional pre-bound arguments that will be prepended on each
+ * call.
+ *
+ * <p>If you want to preserve `$this` on the called function, you can use the [$this, 'method'] syntax.
  *
  * @param callable $fn       A function reference, in the form of:
  *                           <ul>
@@ -56,45 +58,47 @@ function bind (callable $fn, $self = null)
  *                           <li> an array of (className,methodName).
  *                           <li> an array of (classInstance,methodName).
  *                           </ul>
- * @param mixed    $self     The value of `$this` inside `$fn` (an object).
- * @param mixed    ...$args  Extra arguments to be appended to `$fn` on each call.
+ * @param mixed    ...$args  Extra arguments to be <b>prepended</b> to the call's arguments.
  * @return Closure
  */
-function bindRight (callable $fn, $self = null)
+function bindLeft (callable $fn)
 {
-  $args = array_slice (func_get_args (), 2);
-  return Closure::bind (function () use ($fn, $self, $args) {
-    return call_user_func_array ($fn, $args);
-  }, $self);
+  $args = func_get_args ();
+  return function () use ($args) {
+    $fn = array_shift ($args);
+    return call_user_func_array ($fn, array_merge ($args, func_get_args ()));
+  };
 }
 
 /**
- * Invokes a method of an object/class, optionally on the context of another class.
+ * Transforms a callable reference into a closure, with optional pre-bound arguments that will be appended on each call.
  *
- * @param callable $ref     A callable reference; either [className,methodName] or [classInstance,methodName].
- * @param null     $self    [optional] The object on which context the call will be performed (this will set $this in
- *                          the method).
- * @param mixed    ...$args Extra arguments to be prepended to `$fn` on each call.
- * @return mixed The method's return value.
+ * <p>If you want to preserve `$this` on the called function, you can use the [$this, 'method'] syntax for `$fn`.
+ *
+ * @param callable $fn       A function reference, in the form of:
+ *                           <ul>
+ *                           <li> a Closure instance,
+ *                           <li> a function name string,
+ *                           <li> a "class::method" string, or
+ *                           <li> an array of (className,methodName).
+ *                           <li> an array of (classInstance,methodName).
+ *                           </ul>
+ * @param mixed    ...$args  Extra arguments to be <b>appended</b> to the call's arguments.
+ * @return Closure
  */
-function call_method ($ref, $self = null)
+function bindRight (callable $fn)
 {
-  if (!is_array ($ref) || count ($ref) != 2)
-    throw new InvalidArgumentException("Argument must be an array with 2 elements");
-  $args = array_slice (func_get_args (), 2);
-  $m    = new \ReflectionMethod ($ref[0], $ref[1]);
-  if ($m->isStatic ())
-    return call_user_func_array ($ref, $args);
-  $f = $m->getClosure ($ref[0]);
-  if ($self)
-    $f = $f->bindTo ($self, $self);
-  return call_user_func_array ($f, $args);
+  $args = func_get_args ();
+  return function () use ($args) {
+    $fn = array_shift ($args);
+    return call_user_func_array ($fn, array_merge (func_get_args (), $args));
+  };
 }
 
 /**
- * Compiles and returns a lambda function defined by the given string expression.
+ * Returns a lambda function defined by the given string expression.
  *
- * The expression is compiled only once, further calls to this function with the same argument will return a cached
+ * <p>The expression is compiled only once; further calls to this function with the same argument will return a cached
  * instance.
  *
  * @param string $exp An expression with the syntax: "$arg1,$arg2,... => php_expression".
@@ -115,10 +119,9 @@ function f ($exp)
 }
 
 /**
- * Compiles and returns a lambda function that receives a single argument `$x`, whose body is defined by the given
- * string expression.
+ * Returns a lambda function that receives a single argument `$x`, whose body is defined by the given string expression.
  *
- * The expression is compiled only once, further calls to this function with the same argument will return a cached
+ * <p>The expression is compiled only once; further calls to this function with the same argument will return a cached
  * instance.
  *
  * @param string $exp A PHP expression where the token `$x` refers to the function's argument.
@@ -185,6 +188,29 @@ function identity ()
 function nop ()
 {
   return function () { };
+}
+
+/**
+ * Invokes a method of an object/class, optionally on the context of another class.
+ *
+ * @param callable $ref     A callable reference; either [className,methodName] or [classInstance,methodName].
+ * @param null     $self    [optional] The object on which context the call will be performed (this will set $this in
+ *                          the method).
+ * @param mixed    ...$args Extra arguments to be prepended to `$fn` on each call.
+ * @return mixed The method's return value.
+ */
+function call_method ($ref, $self = null)
+{
+  if (!is_array ($ref) || count ($ref) != 2)
+    throw new InvalidArgumentException("Argument must be an array with 2 elements");
+  $args = array_slice (func_get_args (), 2);
+  $m    = new \ReflectionMethod ($ref[0], $ref[1]);
+  if ($m->isStatic ())
+    return call_user_func_array ($ref, $args);
+  $f = $m->getClosure ($ref[0]);
+  if ($self)
+    $f = $f->bindTo ($self, $self);
+  return call_user_func_array ($f, $args);
 }
 
 /**
