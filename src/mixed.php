@@ -167,13 +167,17 @@ function setAt (& $data, $path, $v, $assoc = false)
  */
 function unsetAt (& $data, $path)
 {
-  $paths = $path === '' ? [] : explode ('.', $path);
-  $key   = array_pop ($paths);
-  $path  = implode ('.', $paths);
-  $v     =& getRefAt ($data, $path);
-  if (is_array ($v))
-    unset ($v[$key]);
-  else if (is_object ($v))
-    unset ($v->$key);
-  else throw new InvalidArgumentException ("Not an object or array");
+  if ($path === '')
+    $data = is_array($data) ? [] : (object)[];
+  else {
+    $paths =explode ('.', $path);
+    $key   = array_pop ($paths);
+    $path  = implode ('.', $paths);
+    $v     =& getRefAt ($data, $path);
+    if (is_array ($v))
+      unset ($v[$key]);
+    else if (is_object ($v))
+      unset ($v->$key);
+    else throw new InvalidArgumentException ("Not an object or array");
+  }
 }

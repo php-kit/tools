@@ -813,7 +813,7 @@ function array_normalizeEmptyValues (array $array, $recursive = false)
  * **ArrayOf** - Creates an array from the given arguments.
  *
  * <p>This is quite useful when used with the splat/spread operator.<br>
- * >Ex: `array_from($a, ...$b)`
+ * >Ex: `aof($a, ...$b)`
  *
  * @return array
  */
