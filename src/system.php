@@ -1,16 +1,39 @@
 <?php
 
 /**
- * Retrieves an environmental variable.
+ * Retrieves an environmental variable, if it is defined, automatically typecasting its value if possible.
+ *
+ * <p>It returns the default value if the variable is not defined or the retrieved value is `NULL` or `''`.
+ *
+ * <p>If a global variable `$__ENV` is defined, values on it will override the real environment variables.
  *
  * @param string $var
  * @param string $default
- * @return string
+ * @return string|int|bool
  */
 function env ($var, $default = '')
 {
-  $v = getenv ($var);
-  return $v == '' || $v[0] == '%' ? $default : $v;
+  global $__ENV;
+  static $MAP = [
+    'false' => false,
+    'off'   => false,
+    'no'    => false,
+    'none'  => false,
+    'true'  => true,
+    'on'    => true,
+    'yes'   => true,
+    'null'  => null,
+  ];
+  $v = isset($__ENV[$var]) ? $__ENV[$var] : getenv ($var);
+
+  if ($v === false)
+    return $default;
+  $v = trim ($v);
+  if (isset($MAP[$v]))
+    $v = $MAP[$v];
+  elseif (is_numeric ($v))
+    return intval ($v);
+  return $v === '' || is_null ($v) ? $default : $v;
 }
 
 /**
