@@ -221,6 +221,11 @@ function call_method ($ref, $self = null)
  *
  * ><p>This is meant to be used as a callback for iterable sequences.
  *
+ * ><p>**Ex:**
+ * ```php
+ *   $x = map ($iterable, pluck ('field'))
+ * ```
+ *
  * @param array|string $flds If a string, it is the name of the field to extract, otherwise it must be a linear array
  *                           of field names.
  * @return Closure

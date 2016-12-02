@@ -85,7 +85,7 @@ function rrmdir ($dir)
         return unlink ($dir);
     }
     else if (is_dir ($dir)) {
-      $o       = true;
+      $o = true;
       foreach (scandir ($dir) as $subdir) {
         if ($subdir == "." || $subdir == "..")
           continue;
@@ -361,20 +361,40 @@ function includeFile ($filename)
 }
 
 /**
- * Loads the specified file, optionally searching the include path, and stripping the Unicode Byte Order Mark (BOM), if
- * one is present.
+ * Loads the specified **text** file.
+ *
+ * <p>It also performs the following tasks:
+ * - optionally searches the include path;
+ * - skips the Unicode Byte Order Mark (BOM), if one is present;
+ * - convertes line endings to the format expected by the operating system.
+ *
+ * ><p>**WARNING:** do NOT use this function to load binary files.
  *
  * @param string    $filename
  * @param bool|true $useIncludePath
  * @return false|string `false` if the file is not found.
  */
-function loadFile ($filename, $useIncludePath = true)
+function loadFile ($filename, $useIncludePath = false)
 {
   if ($useIncludePath) {
     if (!($filename = stream_resolve_include_path ($filename))) return false;;
   }
   else if (!file_exists ($filename)) return false;
-  return removeBOM (file_get_contents ($filename));
+
+  //ini_set("auto_detect_line_endings", true);  //TODO: is this required?
+  $f = fopen ($filename, 'rt', false);
+  try {
+    // Read the first 3 bytes to determine if there is a BOM
+    $m = fread ($f, 3);
+    if ($m != pack ('CCC', 0xef, 0xbb, 0xbf))
+      // No BOM, so read from the beginning
+      fseek ($f, 0);
+    // Otherwise, read from this point on, skipping the BOM (this is faster than doing a substr() and copying strings around)
+    return stream_get_contents ($f);
+  }
+  finally {
+    fclose ($f);
+  }
 }
 
 /**
