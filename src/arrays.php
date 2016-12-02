@@ -613,6 +613,19 @@ function array_exclude (array $data, array $keys)
 }
 
 /**
+ * Removes duplicates values from an array.
+ *
+ * <p>This is similar to {@see array_unique} but its much faster when dealing with large amounts of string values.
+ *
+ * @param array $data
+ * @return array
+ */
+function array_deduplicate (array $data)
+{
+  return array_flip (array_flip ($data));
+}
+
+/**
  * Converts a PHP array map to an instance of the specified class.
  *
  * @param array  $array
