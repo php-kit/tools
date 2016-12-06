@@ -60,9 +60,29 @@ function json_save ($path, $data, $pretty = true)
   file_put_contents ($path, $json);
 }
 
+/**
+ * Loads and decodes a JSON file.
+ *
+ * @param string $path
+ * @param bool   $assoc When TRUE, returned objects will be converted into associative arrays.
+ * @return mixed
+ */
 function json_load ($path, $assoc = false)
 {
   return json_decode (file_get_contents ($path), $assoc);
+}
+
+/**
+ * Ensures a filesystem directory exists; if it doesn't, it creates both it and all the required non-existing parent
+ * directories.
+ *
+ * @param string $dirpath
+ * @param int    $mode An octal value for the directory attributes.
+ * @return bool TRUE on success, FALSE otherwise.
+ */
+function ensureDir ($dirpath, $mode = 0777)
+{
+  return is_dir ($dirpath) || mkdir ($dirpath, $mode, true);
 }
 
 /**
