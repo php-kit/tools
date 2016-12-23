@@ -13,26 +13,55 @@ function boolToStr ($val)
 }
 
 /**
- * Enhanced version of boolval().
- * <p>Converts a truthy value or a textual description of a boolean value into a true boolean.
- * <p>It also supports evaluating Traversables.
+ * Converts a string representation of a boolean value, or any other value, into a true boolean.
  *
- * @param mixed $val 'true', 'yes', 'on', '1', non empty traversables and any truthy value evaluate to `true`.
- *                   All other values evaluate to `false`.
+ * <p>Despite the name (which conveys the meaning of this being the reverse of {@see boolToStr}), it also accepts
+ * non-string values.
+ *
+ * ### String argument
+ * The `'false'`, `'no'`, `'off'`, `'0'` and `''` values evaluate to `false`.
+ * <p>All other string values evaluate to `true`.
+ *
+ * ### Non-string argument
+ * The `NULL`, `0`, `FALSE` or `[]` values evaluate to `false`.
+ * <p>All other non-string values evaluate to `true`, except for empty iterables
+ * (see {@see Iterator} and {@see IteratorAggregate}).
+ *
+ * @param mixed $val
+ * @return bool
+ */
+function strToBool ($val)
+{
+  return is_string ($val)
+    ? $val !== '' && $val !== 'false' && $val !== '0' && $val !== 'no' && $val !== 'off'
+    : toBool ($val);
+}
+
+/**
+ * Converts a truthy value into a true boolean.
+ *
+ * <p>This is an enhanced version of {@see boolval}.
+ * <p>Unlike direct boolean casts, string '0' is considered TRUE, as any other non-empty string.
+ * <p>It returns FALSE for `NULL`, `''`, `0`, `FALSE` and `[]`.
+ * <p>All other values return TRUE, except for empty iterables (see {@see Iterator} and {@see IteratorAggregate}).
+ *
+ * @param mixed $val
  *
  * @return bool
  */
 function toBool ($val)
 {
-  if ($val instanceof Iterator)
-    return $val->valid ();
-  if ($val instanceof IteratorAggregate) {
-    $it = $val->getIterator ();
-    /** @var Iterator $it */
-    $it->rewind ();
-    return $it->valid ();
+  if (is_object ($val)) {
+    if ($val instanceof Iterator)
+      return $val->valid ();
+    if ($val instanceof IteratorAggregate) {
+      $it = $val->getIterator ();
+      /** @var Iterator $it */
+      return $it->valid ();
+    }
+    return true;
   }
-  return is_string ($val) ? $val == 'true' || $val == '1' || $val == 'yes' || $val == 'on' : (bool)$val;
+  return $val !== '0' ? (bool)$val : true;
 }
 
 /**
@@ -109,7 +138,7 @@ function friendlySize ($size, $precision = 0)
 /**
  * Converts the argument into an iterator, if possible, otherwise it throws an exception.
  *
- * @param mixed $t An iterable value or null. If null, an empty iterator is returned.
+ * @param mixed $t            An iterable value or null. If null, an empty iterator is returned.
  * @param bool  $throwOnError If false, the function returns false.
  * @return Iterator|false
  */
