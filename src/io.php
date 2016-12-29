@@ -439,7 +439,23 @@ function removeBOM ($string)
  */
 function stdoutIsRedirected ()
 {
-  return !isCLI () || !stream_get_meta_data (STDOUT)['seekable'];
+  if (!isCLI ()) return true;
+  if (function_exists ('posix_isatty'))
+    return posix_isatty (STDOUT);
+  return !stream_get_meta_data (STDOUT)['seekable'];
+}
+
+function outputSupportsColor ()
+{
+  return tputSupported () && `tput colors` > 8 && !stdoutIsRedirected ();
+}
+
+function tputSupported ()
+{
+  static $available = null;
+  if (is_null ($available))
+    $available = command_exists ('tput');
+  return $available;
 }
 
 /**
@@ -450,10 +466,7 @@ function stdoutIsRedirected ()
  */
 function tput ($s)
 {
-  static $available = null;
-  if (is_null ($available))
-    $available = command_exists ('tput') && `tput colors` > 8 && !stdoutIsRedirected ();
-  return $available ? `tput $s` : '';
+  return tputSupported () ? `tput $s` : '';
 }
 
 /**
@@ -465,10 +478,12 @@ function tput ($s)
  *
  * @param string $color One of the {@see TERMINAL_COLORS} array keys.
  * @param string $msg   The message to format.
- * @return string The formatted text.
+ * @return string The formatted text or the original text if color support is not available.
  */
 function color ($color, $msg)
 {
+  if (!tputSupported () || !outputSupportsColor ())
+    return $msg;
   static $cache = [];
   if (isset ($cache[$color]))
     list ($begin, $end) = $cache[$color];
