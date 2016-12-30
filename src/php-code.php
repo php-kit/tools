@@ -14,13 +14,27 @@ class PhpCode
    * @param callable $errorHandler Optional error-handling code.
    * @param bool     $reset        True if the error status should be cleared so that later code does not intercept the
    *                               previous error.
-   * @return mixed   The return value from the callable argument.
+   * @return mixed   The return value from the callable argument or the error handler.
    *
    * @throws ErrorException
    * @throws Exception
    */
   static function catchErrorsOn ($wrappedCode, $errorHandler = null, $reset = true)
   {
+    if (PHP_MAJOR_VERSION >= 7) {
+      try {
+        // Run the caller-supplied code.
+        return $wrappedCode();
+      }
+      catch (Throwable $e) {
+        // Handle the error.
+        if (isset($errorHandler))
+          return $errorHandler($e);
+
+        throw $e;
+      }
+    }
+
     $prevHandler = set_error_handler (function ($errno, $errstr, $errfile, $errline) {
       if (!error_reporting ())
         return false;
