@@ -311,8 +311,11 @@ function array_insertBefore (array $array, $before, $value, $key = null)
     return $array;
   }
   else {
-    $p = array_search ($before, $array, true);
-    if ($p === false) $p = 0;
+    $p = 0;
+    foreach ($array as $k => $v) {
+      if ($k === $before) break;
+      ++$p;
+    }
     return array_insertAtPosition ($array, $p, $value, $key);
   }
 }
