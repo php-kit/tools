@@ -62,7 +62,7 @@ function setField (&$data, $key, $value)
  * @return array A map of keys to extracted values or an empty array if $target is null.
  * @throws InvalidArgumentException If the target is not an array, object or null.
  */
-function fields ($target, array $keys)
+function getFields ($target, array $keys)
 {
   if (is_array ($target))
     return array_only ($target, $keys);

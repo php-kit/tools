@@ -599,7 +599,7 @@ function simplePluralize ($num, $thing)
  * Indents a (possibly multiline) string.
  *
  * @param string $str
- * @param int    $level  The indentation level.
+ * @param int    $level  The indentation level; it will be multiplied by 2.
  * @param string $indent A pattern to be output at the start of each line, repeated $level times.
  * @return string
  */

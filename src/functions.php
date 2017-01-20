@@ -233,6 +233,6 @@ function call_method ($ref, $self = null)
 function pluck ($flds)
 {
   return is_array ($flds)
-    ? function ($e) use ($flds) { return fields ($e, $flds); }
+    ? function ($e) use ($flds) { return getFields ($e, $flds); }
     : function ($e) use ($flds) { return getField ($e, $flds); };
 }

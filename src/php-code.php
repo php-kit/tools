@@ -14,10 +14,10 @@ class PhpCode
    * @param callable $errorHandler Optional error-handling code.
    * @param bool     $reset        True if the error status should be cleared so that later code does not intercept the
    *                               previous error.
-   * @return mixed   The return value from the callable argument or the error handler.
+   * @return mixed The return value from the callable argument or the error handler.
    *
-   * @throws ErrorException
    * @throws Exception
+   * @throws Throwable
    */
   static function catchErrorsOn ($wrappedCode, $errorHandler = null, $reset = true)
   {
@@ -89,6 +89,18 @@ class PhpCode
   }
 
   /**
+   * Serializes a value to PHP source code.
+   *
+   * @param mixed $value
+   * @param int   $indent Text indentation level; it will be multiplied by 2.
+   * @return string
+   */
+  static function dump ($value, $indent = 0)
+  {
+    return ltrim (str_indent (preg_replace ('/^array \((.*)\)/ms', '[$1]', var_export ($value, true)), $indent));
+  }
+
+  /**
    * Tries to evaluate a constant value expressed as a string.
    *
    * @param string $exp
@@ -133,6 +145,8 @@ class PhpCode
    *
    * @param string $filename
    * @return mixed|null The value returned from the executed code, or `null` if no `return` is called.
+   * @throws Exception
+   * @throws Throwable
    */
   static function exec ($filename)
   {
@@ -191,7 +205,7 @@ class PhpCode
       return false; // Unbalanced braces would break the eval below
     ob_start (); // Catch potential parse error messages
     $code = eval ('if(0){' . $code . '}'); // Put $code in a dead code sandbox to prevent its execution
-    if (func_num_args() > 1)
+    if (func_num_args () > 1)
       $output = ob_get_clean ();
     else
       ob_end_clean ();
