@@ -1,6 +1,28 @@
 <?php
 
 /**
+ * Converts a callable reference to a {@see Closure} instance.
+ *
+ * @param callable $f   A callable reference, in the form of:
+ *                      <ul>
+ *                      <li> a Closure instance,
+ *                      <li> a function name string,
+ *                      <li> a "class::method" string, or
+ *                      <li> an array of (className,methodName).
+ *                      <li> an array of (classInstance,methodName).
+ *                      </ul>
+ * @return callable
+ */
+function fn (callable $f)
+{
+  return PHP_MAJOR_VERSION > 6 && PHP_MINOR_VERSION > 0
+    ? Closure::fromCallable ($f)
+    : function (...$a) use ($f) {
+      return $f (...$a);
+    };
+}
+
+/**
  * Allows an IDE to recognize a callable reference, so that it can validate it and allow refactoring it.
  *
  * It is a no-op: it returns the input argument unmodified.
@@ -15,7 +37,7 @@
  *                      </ul>
  * @return callable
  */
-function fn (callable $f)
+function fnRef (callable $f)
 {
   return $f;
 }

@@ -266,27 +266,17 @@ function array_getColumn (array $array, $key)
  * the end of the array.
  *
  * @param array           $array
- * @param int|string|null $after
- * @param mixed           $value
- * @param int|string|null $key When null, the value is appended to the end of the array.
+ * @param int|string|null $afterKey When null, the value is appended to the array.
+ * @param array           $values   The array to be inserted.
  * @return array
  */
-function array_insertAfter (array $array, $after, $value, $key = null)
+function array_insertAfterKey (array $array, $afterKey, $values)
 {
-  if (is_null ($after) || !isset($array[$after])) {
-    if (isset($key))
-      $array[$key] = $value;
-    else $array[] = $value;
-    return $array;
-  }
-  else {
-    $p = 0;
-    foreach ($array as $k => $v) {
-      ++$p;
-      if ($k === $after) break;
-    }
-    return array_insertAtPosition ($array, $p, $value, $key);
-  }
+  $pos = array_keyIndex ($array, $afterKey);
+  if (!isset($pos))
+    $pos = count ($array);
+  else ++$pos;
+  return array_insert ($array, $pos, $values);
 }
 
 /**
@@ -299,45 +289,41 @@ function array_insertAfter (array $array, $after, $value, $key = null)
  * the beginning of the array.
  *
  * @param array           $array
- * @param int|string|null $before
- * @param mixed           $value
- * @param int|string|null $key When null, the value is appended to the end of the array.
+ * @param int|string|null $beforeKey When null, the value is prepended to the array.
+ * @param array           $values    The array to be inserted.
  * @return array
  */
-function array_insertBefore (array $array, $before, $value, $key = null)
+function array_insertBeforeKey (array $array, $beforeKey, $values)
 {
-  if (is_null ($before)) {
-    $array[$key] = $value;
-    return $array;
-  }
-  else {
-    $p = 0;
-    foreach ($array as $k => $v) {
-      if ($k === $before) break;
-      ++$p;
-    }
-    return array_insertAtPosition ($array, $p, $value, $key);
-  }
+  return array_insert ($array, array_keyIndex ($array, $beforeKey), $values);
 }
 
 /**
- * Inserts a value with an optional key at the specified ordinal position of an array, shifting other values to make
- * room.
+ * Inserts an array into another at the specified position, irrespective of the target's keys.
  *
- * <p>This function preserves the current order and keys of the array elements.
- * <p>Inserting a string key at a specific position is supported (unlike `array_splice()`).
- *
- * @param array           $array
- * @param int             $pos An ordinal index (NOT a key of the array).
- * @param mixed           $value
- * @param int|string|null $key When null, the value is appended to the end of the array.
- * @return array
+ * @param array $target The array where data will be inserted into.
+ * @param int   $pos    If offset is non-negative, the sequence will start at that offset in the array. If offset is
+ *                      negative, the sequence will start that far from the end of the array.
+ * @param array $source The data to be merged,
+ * @return array        The resulting array.
  */
-function array_insertAtPosition (array $array, $pos, $value, $key = null)
+function array_insert (array $target, $pos, array $source)
 {
-  if (is_null ($key))
-    $key = count ($array);
-  return array_merge (array_slice ($array, 0, $pos, true), [$key => $value], array_slice ($array, $pos, null, true));
+  return array_merge (array_slice ($target, 0, $pos, true), $source, array_slice ($target, $pos, null, true));
+}
+
+/**
+ * Gets the position of a key on an array.
+ *
+ * @param array      $array
+ * @param string|int $key
+ * @param int        $notFoundIndex Value to be returned if the key was not found.
+ * @return int|null
+ */
+function array_keyIndex (array $array, $key, $notFoundIndex = null)
+{
+  $keys = array_flip (array_keys ($array));
+  return isset($keys[$key]) ? $keys[$key] : $notFoundIndex;
 }
 
 /**
@@ -647,18 +633,18 @@ function array_toClass (array $array, $className)
 }
 
 /**
- * Reads a value from the given array at the specified index/key.
+ * Reads a value from the given array (or object implementing ArrayAccess) at the specified index/key.
  * <br><br>
- * Unlike the usual array access operator [], this function does not generate warnings when
- * the key is not present on the array; instead, it returns null or a default value.
+ * Unlike the usual array access operator [], this function does not generate warnings when the key is not present on
+ * the array; instead, it returns null or a default value.
  *
- * @param array         $array The target array.
- * @param number|string $key   The list index or map key.
- * @param mixed         $def   An optional default value.
+ * @param array|ArrayAccess $array The target array.
+ * @param number|string     $key   The list index or map key.
+ * @param mixed             $def   An optional default value.
  *
  * @return mixed
  */
-function get (array $array = null, $key, $def = null)
+function get ($array = null, $key, $def = null)
 {
   return isset ($array[$key]) ? $array[$key] : $def;
 }
