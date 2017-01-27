@@ -33,7 +33,15 @@ function env ($var, $default = '')
     $v = $MAP[$v];
   elseif (is_numeric ($v))
     return intval ($v);
-  return $v === '' || is_null ($v) ? $default : $v;
+  if ($v === '' || is_null ($v))
+    return $default;
+  if ($v[0] == '[' || $v[0] == '{') {
+    $o = json_decode ($v);
+    if (is_null ($o))
+      throw new RuntimeException("Invalid configuration value: $v");
+    return $o;
+  }
+  return $v;
 }
 
 /**
