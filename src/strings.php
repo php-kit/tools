@@ -370,7 +370,7 @@ function taggedStrLen ($str)
  * @param bool   $falseOnNoMatch If true, when no match is found, false is returned instead of an array with empty
  *                               entries.
  * @param mixed  $emptyValue     The value with which to pad the returned array.
- * @return array The match, which consists of the total matched string and each of the captured groups.
+ * @return array|false The match, which consists of the total matched string and each of the captured groups.
  */
 function str_match ($source, $pattern, $groups = 0, $falseOnNoMatch = false, $emptyValue = '')
 {
