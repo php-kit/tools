@@ -159,3 +159,21 @@ function iteratorOf ($t, $throwOnError = true)
   return false;
 }
 
+/**
+ * Encodes a value as a javascript constant expression.
+ * <p>The output is similar to {@see json_encode} but without quoted object keys.
+ *
+ * @param mixed $value Any value type except `resource`.
+ * @param bool  $formatted When TRUE, the output is formatted with indentation and proper spacing between elements.
+ * @return string
+ */
+function javascriptLiteral ($value, $formatted = true)
+{
+  $o = json_encode($value, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PARTIAL_OUTPUT_ON_ERROR |
+                           ($formatted ? JSON_PRETTY_PRINT : 0));
+  // Unquote keys that may be unquoted
+  $o = preg_replace ('/^(\s*)"([^"\s]+)": /m','$1$2: ',$o);
+  // Compact arrays that have a single value
+  $o = preg_replace ('/(^|: )\[\s+(\S+)\s+]/','$1[ $2 ]',$o);
+  return $o;
+}
