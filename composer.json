@@ -33,5 +33,10 @@
       "src/php-code.php",
       "src/io.php"
     ]
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "2.x-dev"
+    }
   }
 }
