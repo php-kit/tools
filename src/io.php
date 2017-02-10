@@ -51,13 +51,32 @@ function hr ($char)
   return str_repeat ($char, intval (`tput cols`));
 }
 
+/**
+ * Encodes data as JSON as saves it to a file.
+ *
+ * @param string $path
+ * @param mixed  $data
+ * @param bool   $pretty
+ */
 function json_save ($path, $data, $pretty = true)
 {
+  file_put_contents ($path, json_print ($data, $pretty));
+}
+
+/**
+ * Encodes data as JSON with a specific formatting for improved readability.
+ * ><p>This is also used by {@see json_save}.
+ *
+ * @param mixed $data
+ * @param bool  $pretty
+ * @return string
+ */
+function json_print ($data, $pretty = true)
+{
   $json = json_encode ($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | ($pretty ? JSON_PRETTY_PRINT : 0));
-  $json = preg_replace_callback ('/^ +/m', function ($m) {
+  return preg_replace_callback ('/^ +/m', function ($m) {
     return str_repeat (' ', strlen ($m[0]) / 2);
   }, $json);
-  file_put_contents ($path, $json);
 }
 
 /**
