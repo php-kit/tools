@@ -372,7 +372,7 @@ function updir ($path, $levels = 1)
 function dirnameEx ($path, $levels = 1)
 {
   $path = updir ($path, $levels);
-  return $path == DIRECTORY_SEPARATOR ? '' : $path;
+  return $path == DIRECTORY_SEPARATOR || $path == '.' ? '' : $path;
 }
 
 /**
