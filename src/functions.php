@@ -3,18 +3,22 @@
 /**
  * Converts a callable reference to a {@see Closure} instance.
  *
- * @param callable $f   A callable reference, in the form of:
- *                      <ul>
- *                      <li> a Closure instance,
- *                      <li> a function name string,
- *                      <li> a "class::method" string, or
- *                      <li> an array of (className,methodName).
- *                      <li> an array of (classInstance,methodName).
- *                      </ul>
+ * <p>If the argument is already a Closure, it is returned unmodified.
+ *
+ * @param callable $f A callable reference, in the form of:
+ *                    <ul>
+ *                    <li> a Closure instance,
+ *                    <li> a function name string,
+ *                    <li> a "class::method" string, or
+ *                    <li> an array of (className,methodName).
+ *                    <li> an array of (classInstance,methodName).
+ *                    </ul>
  * @return callable
  */
 function fn (callable $f)
 {
+  if ($f instanceof Closure)
+    return $f;
   return PHP_MAJOR_VERSION > 6 && PHP_MINOR_VERSION > 0
     ? Closure::fromCallable ($f)
     : function (...$a) use ($f) {
@@ -257,4 +261,17 @@ function pluck ($flds)
   return is_array ($flds)
     ? function ($e) use ($flds) { return getFields ($e, $flds); }
     : function ($e) use ($flds) { return getField ($e, $flds); };
+}
+
+/**
+ * Returns reflection information about the given callable.
+ *
+ * @param callable $fn
+ * @return ReflectionFunction|ReflectionMethod
+ */
+function reflectionOfCallable (callable $fn)
+{
+  if ($fn instanceof \Closure || is_string ($fn))
+    return new \ReflectionFunction ($fn);
+  return new \ReflectionMethod (...$fn);
 }
