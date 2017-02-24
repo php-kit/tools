@@ -126,9 +126,9 @@ function friendlySize ($size, $precision = 0)
   $sc2   = 1;
   while (strlen ($s) > 3) {
     ++$p;
-    $sc *= 1024;
+    $sc  *= 1024;
     $sc2 *= 1000;
-    $s = floor ($s / 1024);
+    $s   = floor ($s / 1024);
   }
   $d = round (($size - $sc * $s) / $sc2, $precision);
   $s += $d;
@@ -163,17 +163,17 @@ function iteratorOf ($t, $throwOnError = true)
  * Encodes a value as a javascript constant expression.
  * <p>The output is similar to {@see json_encode} but without quoted object keys.
  *
- * @param mixed $value Any value type except `resource`.
+ * @param mixed $value     Any value type except `resource`.
  * @param bool  $formatted When TRUE, the output is formatted with indentation and proper spacing between elements.
  * @return string
  */
 function javascriptLiteral ($value, $formatted = true)
 {
-  $o = json_encode($value, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PARTIAL_OUTPUT_ON_ERROR |
-                           ($formatted ? JSON_PRETTY_PRINT : 0));
+  $o = json_encode ($value, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PARTIAL_OUTPUT_ON_ERROR |
+                            JSON_PRETTY_PRINT);
   // Unquote keys that may be unquoted
-  $o = preg_replace ('/^(\s*)"([^"\s]+)": /m','$1$2: ',$o);
+  $o = preg_replace ('/^(\s*)"([^"\s]+)": /m', '$1$2: ', $o);
   // Compact arrays that have a single value
-  $o = preg_replace ('/(^|: )\[\s+(\S+)\s+]/','$1[ $2 ]',$o);
-  return $o;
+  $o = preg_replace ('/(^|: )\[\s+(\S+)\s+]/', '$1[ $2 ]', $o);
+  return $formatted ? $o : preg_replace (['/^(.*?:)\s+/m', '/\n\s*/'], ['$1', ''], $o);
 }
