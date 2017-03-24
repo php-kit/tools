@@ -155,37 +155,36 @@ if (!function_exists ('array_only')) {
  * @param array  $arr
  * @param string $fld
  * @param mixed  $val
+ * @param int|string $key Outputs the key of the matched element or NULL if it was not found.
  * @param bool   $strict TRUE to perform strict equality testing.
- *
- * @return array(value,index) The index and value of the first matching element or
- * array (null, false) if none found.
- * <p>Use <code>list ($v,$i) = array_find()</code> to immediately split the return value into separate variables.
+ * @return array The value of the first matching element or NULL if none found.
  */
-function array_find (array $arr, $fld, $val, $strict = false)
+function array_find (array $arr, $fld, $val, &$key = null, $strict = false)
 {
   if (isset ($arr[0])) {
     if (is_object ($arr[0])) {
       if ($strict) {
-        foreach ($arr as $i => $v)
+        foreach ($arr as $key => $v)
           if ($v->$fld === $val)
-            return [$v, $i];
+            return $v;
       }
-      else foreach ($arr as $i => $v)
+      else foreach ($arr as $key => $v)
         if ($v->$fld == $val)
-          return [$v, $i];
+          return $v;
     }
     if (is_array ($arr[0])) {
       if ($strict) {
-        foreach ($arr as $i => $v)
+        foreach ($arr as $key => $v)
           if ($v[$fld] === $val)
-            return [$v, $i];
+            return $v;
       }
-      else foreach ($arr as $i => $v)
+      else foreach ($arr as $key => $v)
         if ($v[$fld] == $val)
-          return [$v, $i];
+          return $v;
     }
   }
-  return [null, false];
+  $key = null;
+  return null;
 }
 
 /**
