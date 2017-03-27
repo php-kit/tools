@@ -592,7 +592,7 @@ function str_search ($str, $pattern, $from = 0, &$match = null)
  */
 function simplePluralize ($num, $thing)
 {
-  return sprintf ('%d %s%s', $num, $thing, $num == 1 ? '' : 's');
+  return sprintf ('%s%s', $thing, $num == 1 ? '' : 's');
 }
 
 /**
