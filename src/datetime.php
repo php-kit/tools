@@ -54,8 +54,7 @@ function is_datetime ($date, $format = 'Y-m-d H:i:s')
  */
 function is_date ($date, $format = 'Y-m-d')
 {
-  $d = DateTime::createFromFormat ($format, $date);
-  return $d && $d->format ($format) == $date;
+  return is_datetime ($date, $format);
 }
 
 /**

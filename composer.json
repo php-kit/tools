@@ -31,7 +31,8 @@
       "src/strings.php",
       "src/system.php",
       "src/php-code.php",
-      "src/io.php"
+      "src/io.php",
+      "src/classes.php"
     ]
   },
   "extra": {

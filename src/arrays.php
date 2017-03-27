@@ -1,4 +1,7 @@
 <?php
+/*
+ * A library that complements PHP's built-in array manipulation functions.
+ */
 
 /**
  * Searches for an element on a **sorted** array.

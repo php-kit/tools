@@ -1,4 +1,7 @@
 <?php
+/*
+ * A library that complements PHP's built-in string manipulation functions.
+ */
 
 if (!function_exists ('mb_chr')) {
   /**
