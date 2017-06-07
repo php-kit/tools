@@ -62,13 +62,9 @@ if (!function_exists ('mb_str_pad')) {
     mb_internal_encoding ($encoding);
     $str_len     = mb_strlen ($str);
     $pad_str_len = mb_strlen ($pad_str);
-    if (!$str_len && ($dir == STR_PAD_RIGHT || $dir == STR_PAD_LEFT)) {
-      $str_len = 1; // @debug
-    }
     if (!$pad_len || !$pad_str_len || $pad_len <= $str_len) {
       return $str;
     }
-
     $result = null;
     if ($dir == STR_PAD_BOTH) {
       $length = ($pad_len - $str_len) / 2;
@@ -78,18 +74,17 @@ if (!function_exists ('mb_str_pad')) {
                 . mb_substr (str_repeat ($pad_str, $repeat), 0, ceil ($length));
     }
     else {
-      $repeat = ceil ($str_len - $pad_str_len + $pad_len);
+      $repeat = ceil(($pad_len - $str_len) / $pad_str_len);
+      $mod = ($pad_len - $str_len) % $pad_str_len;
       if ($dir == STR_PAD_RIGHT) {
-        $result = $str . str_repeat ($pad_str, $repeat);
-        $result = mb_substr ($result, 0, $pad_len);
+        $result = str_repeat ($pad_str, $repeat);
+        $result = $str . mb_substr ($result, $mod);
       }
       else if ($dir == STR_PAD_LEFT) {
         $result = str_repeat ($pad_str, $repeat);
-        $result =
-          mb_substr ($result, 0, $pad_len - (($str_len - $pad_str_len) + $pad_str_len)) . $str;
+        $result = mb_substr ($result, $mod) . $str;
       }
     }
-
     return $result;
   }
 }
