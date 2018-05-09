@@ -268,6 +268,7 @@ function pluck ($flds)
  *
  * @param callable $fn
  * @return ReflectionFunction|ReflectionMethod
+ * @throws ReflectionException
  */
 function reflectionOfCallable (callable $fn)
 {
@@ -275,3 +276,15 @@ function reflectionOfCallable (callable $fn)
     return new \ReflectionFunction ($fn);
   return new \ReflectionMethod (...$fn);
 }
+
+/**
+ * Determines if a PHP built-in function is available.
+ *
+ * @param string $fn
+ * @return bool
+ */
+function isFunctionEnabled ($fn)
+{
+  return is_callable ($fn) && false === stripos (ini_get ('disable_functions'), $fn);
+}
+

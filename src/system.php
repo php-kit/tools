@@ -65,7 +65,14 @@ function isCLI ()
 function command_exists ($command)
 {
   $where = (PHP_OS == 'WINNT') ? 'where' : 'which';
-  return !!`$where $command`;
+  if (!isFunctionEnabled ('shell_exec'))
+    return false;
+  try {
+    return !!`$where $command`;
+  }
+  catch (Throwable $e) {
+    return false;
+  }
 }
 
 /**
