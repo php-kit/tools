@@ -291,13 +291,14 @@ function array_insertAfterKey (array $array, $afterKey, $values)
  * the beginning of the array.
  *
  * @param array           $array
- * @param int|string|null $beforeKey When null, the value is prepended to the array.
+ * @param int|string|null $beforeKey When null, the value is prepended to the array. When empty string (or an invalid
+ *                                   key) the value is appended to the array.
  * @param array           $values    The array to be inserted.
  * @return array
  */
 function array_insertBeforeKey (array $array, $beforeKey, $values)
 {
-  return array_insert ($array, array_keyIndex ($array, $beforeKey), $values);
+  return array_insert ($array, isset($beforeKey) ? array_keyIndex ($array, $beforeKey) : 0, $values);
 }
 
 /**
