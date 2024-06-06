@@ -15,7 +15,7 @@
  *                    </ul>
  * @return callable
  */
-function fn (callable $f)
+function _fn(callable $f)
 {
   if ($f instanceof Closure)
     return $f;
