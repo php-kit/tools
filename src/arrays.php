@@ -312,7 +312,9 @@ function array_insertBeforeKey (array $array, $beforeKey, $values)
  */
 function array_insert (array $target, $pos, array $source)
 {
-  return array_merge (array_slice ($target, 0, $pos, true), $source, array_slice ($target, $pos, null, true));
+	if ($pos === null)
+		$pos = 0;
+	return array_merge (array_slice ($target, 0, $pos, true), $source, array_slice ($target, $pos, null, true));
 }
 
 /**
