@@ -34,10 +34,5 @@
       "src/io.php",
       "src/classes.php"
     ]
-  },
-  "extra": {
-    "branch-alias": {
-      "dev-master": "2.x-dev"
-    }
   }
 }

@@ -159,8 +159,18 @@ function when ($exp, $a, $b = null)
 function enum ($delimiter)
 {
   $args = func_get_args ();
-  array_shift ($args);
-  return join ($delimiter, array_prune_empty (array_map ('trim', $args)));
+  array_shift($args);
+	return join($delimiter, array_filter($args, function ($str)
+		{
+			if ($str === null)
+				return false;
+			if (strlen($str) == 0)//false and empty strings ""
+				return false;
+		if (trim($str) == "")//whitespaces
+				return false;
+			return true;
+		}));
+	//return join ($delimiter, array_prune_empty (array_map ('trim', $args)));//trim(): Passing null to parameter #1 ($string) of type string is deprecated
 }
 
 /**
