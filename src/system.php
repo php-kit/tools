@@ -102,7 +102,7 @@ function runExternalCommand ($cmd, $input = '', $extraPath = '', array $extraEnv
   ];
 
   if ($extraPath) {
-    $path = $extraPath . PATH_SEPARATOR . array_at ($_SERVER, 'PATH', getenv ('PATH'));
+    $path = $extraPath . PATH_SEPARATOR . ($_SERVER['PATH'] ?? getenv ('PATH'));
     if (!isset($extraEnv))
       $extraEnv = [];
     $extraEnv['PATH'] = $path;

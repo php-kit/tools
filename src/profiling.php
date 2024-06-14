@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @param string $label Optinal label.
+ * @param string $label Optional label.
  * @param string $hr    The character sequence to use as an Horizontal Ruler for visually highlighting the profiler's
  *                      messages.
  */

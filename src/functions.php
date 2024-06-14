@@ -15,7 +15,7 @@
  *                    </ul>
  * @return callable
  */
-function fn (callable $f)
+function _fn (callable $f)
 {
   if ($f instanceof Closure)
     return $f;
@@ -140,8 +140,8 @@ function f ($exp)
   if (isset($cache[$exp]))
     return $cache[$exp];
   list ($a, $f) = explode ('=>', $exp, 2);
-
-  return $cache[$exp] = create_function ($a, "return $f;");
+  $code = sprintf('return function(%s) { return %s; };', $a, $f);
+  return $cache[$exp] = eval($code);
 }
 
 /**
@@ -162,7 +162,8 @@ function fx ($exp)
   static $cache = [];
   if (isset($cache[$exp]))
     return $cache[$exp];
-  return $cache[$exp] = create_function ('$x', "return $exp;");
+  $code = sprintf('return function($x) { return %s; };', $exp);
+  return $cache[$exp] = eval($code);
 }
 
 /**
