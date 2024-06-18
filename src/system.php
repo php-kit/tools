@@ -36,7 +36,7 @@ if (!function_exists ('env')) {
       return intval ($v);
     if ($v === '' || is_null ($v))
       return $default;
-    if ($v[0] == '[' || $v[0] == '{') {
+    if (is_string($v) && ($v[0] == '[' || $v[0] == '{')) {
       $o = json_decode ($v);
       if (is_null ($o))
         throw new RuntimeException("Invalid configuration value: $v");
