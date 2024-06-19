@@ -6,7 +6,8 @@ if (!function_exists ('env')) {
    *
    * <p>It returns the default value if the variable is not defined or the retrieved value is `NULL` or `''`.
    *
-   * <p>If a global variable `$__ENV` is defined, values on it will override the real environment variables.
+   * ><b>Note:</b> If a variable is set in `$_ENV`, it will be returned instead of the value of `getenv()`. This is crucial, as
+   * values read by Dotenv are read into `$_ENV`, while `getenv()` reads values directly from the environment.
    *
    * @param string $var
    * @param string $default
@@ -14,7 +15,7 @@ if (!function_exists ('env')) {
    */
   function env ($var, $default = '')
   {
-    global $__ENV;
+    global $_ENV;
     static $MAP = [
       'false' => false,
       'off'   => false,
@@ -25,7 +26,7 @@ if (!function_exists ('env')) {
       'yes'   => true,
       'null'  => null,
     ];
-    $v = isset($__ENV[$var]) ? $__ENV[$var] : getenv ($var);
+    $v = isset($_ENV[$var]) ? $_ENV[$var] : getenv ($var);
 
     if ($v === false)
       return $default;
