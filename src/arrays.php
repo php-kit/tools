@@ -162,7 +162,7 @@ if (!function_exists ('array_only')) {
  * @param bool   $strict TRUE to perform strict equality testing.
  * @return array The value of the first matching element or NULL if none found.
  */
-function array_find (array $arr, $fld, $val, &$key = null, $strict = false)
+function array_find_by_key (array $arr, $fld, $val, &$key = null, $strict = false)
 {
   if (isset ($arr[0])) {
     if (is_object ($arr[0])) {
