@@ -788,13 +788,13 @@ function mapAndFilter ($src, callable $fn)
  * Checks if either the specified key is missing from the given array or it's corresponding value in the array is
  * empty.
  *
- * @param array|null $array The target array.
+ * @param array $array The target array.
  * @param string|int $key   An array key / offset.
  *
  * @return bool True if the key is missing or the corresponding value in the array is empty (null or empty string).
  * @see exists()
  */
-function missing (array $array = null, $key)
+function missing (array $array, $key)
 {
   return !isset($array[$key]) || $array[$key] === '';
 }
