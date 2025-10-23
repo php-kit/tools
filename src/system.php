@@ -90,7 +90,7 @@ function command_exists ($command)
  * Status code -1 = command not found; other status codes = status returned by command execution.
  * @return string|null Data from the command's STDOUT if $output is not specified, null otherwise.
  */
-function runExternalCommand ($cmd, $input = '', $extraPath = '', array $extraEnv = null, $output = null)
+function runExternalCommand ($cmd, $input = '', $extraPath = '', array|null $extraEnv = null, $output = null)
 {
   $descriptorSpec = [
     0 => is_resource ($input)
